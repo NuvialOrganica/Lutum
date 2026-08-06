@@ -32,11 +32,6 @@ import { url } from '../../lib/rutas';
       <span><i></i>Con entrada</span>
       <span><i class="v"></i>Sólo en el mapa</span>
     </div>
-    <div class="lupas">
-      <button class="px" type="button" data-zoom="-">−</button>
-      <button class="px" type="button" data-zoom="0">AJUSTAR</button>
-      <button class="px" type="button" data-zoom="+">+</button>
-    </div>
   </div>
 
   {/* ---------- índice ---------- */}
@@ -60,7 +55,7 @@ import { url } from '../../lib/rutas';
     </ul>
   </details>
 
-  <p class="ayuda px" id="ayuda">ARRASTRA EL MAPA · PULSA UNA CHINCHETA</p>
+  <p class="ayuda px" id="ayuda">ARRASTRA EL MAPA · RUEDA PARA ACERCAR · PULSA UNA CHINCHETA</p>
   <p class="ayuda-movil px">ARRASTRA · PELLIZCA PARA ACERCAR · PULSA UNA CHINCHETA</p>
 
   {/* ---------- panel ---------- */}
@@ -138,6 +133,9 @@ import { url } from '../../lib/rutas';
     display:flex; align-items:center; gap:var(--u6); flex-wrap:wrap;
     /* el hueco de la derecha es para los interruptores CRT y RATÓN */
     padding:var(--u3) 140px var(--u3) var(--u6);
+    /* Ya no hay botones de acercar: se acerca con la rueda, con el pellizco o
+       con doble toque, que es como se espera de un mapa. Los tres botones
+       repetían algo que ya se sabe hacer y robaban sitio. */
     background:rgba(10,4,16,.92); box-shadow:0 -2px 0 var(--c05);
   }
   .cuenta{ font-size:8px; letter-spacing:.14em; color:rgba(245,168,192,.7) }
@@ -148,12 +146,6 @@ import { url } from '../../lib/rutas';
   .leyenda i{ width:10px; height:10px; background:var(--c08);
     clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%) }
   .leyenda i.v{ background:var(--c01); box-shadow:0 0 0 2px var(--c09) }
-  .lupas{ margin-left:auto; display:flex; gap:var(--u) }
-  .lupas button{
-    font-size:8px; letter-spacing:.12em; color:var(--c09);
-    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03); transition:none;
-  }
-  .lupas button:hover{ color:var(--c00); background:var(--c13); box-shadow:0 0 0 2px var(--c10) }
 
   /* ---------- índice ---------- */
   .indice{ position:absolute; left:var(--u4); top:var(--u16); z-index:10;
@@ -237,9 +229,7 @@ import { url } from '../../lib/rutas';
 
     /* En el móvil desaparece el interruptor del RATÓN (no hay ratón que
        apagar) y sólo queda el del CRT, así que basta con un hueco menor. */
-    .barra{ padding:var(--u3) 76px var(--u3) var(--u4); justify-content:space-between }
-    .lupas button{ min-width:44px; min-height:44px }
-    .lupas{ margin-left:0 }
+    .barra{ padding:var(--u3) var(--u4); justify-content:flex-start }
   }
 </style>
 
@@ -294,13 +284,6 @@ import { url } from '../../lib/rutas';
     const c = mundo.getBoundingClientRect();
     zoom(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - c.left, e.clientY - c.top);
   }, { passive: false });
-
-  for (const b of Array.from(document.querySelectorAll<HTMLElement>('[data-zoom]'))) {
-    b.addEventListener('click', () => {
-      if (b.dataset.zoom === '0') { ajustar(); return; }
-      zoom(b.dataset.zoom === '+' ? 1.35 : 1 / 1.35);
-    });
-  }
 
   /* --------------------------------------------------------- arrastre ----
      Mismo criterio que en el panteón: no se captura el puntero hasta que el
