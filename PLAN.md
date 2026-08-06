@@ -50,26 +50,26 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 2 · FASE 1 — Sistema de diseño pixel
 
-- [ ] Fijar la **paleta de 16 colores** como variables CSS (ver GUIA)
-- [ ] Autoalojar `Press Start 2P` y `VT323` en `public/fonts/` (comprobado: Press Start 2P sí tiene ñ y acentos)
-- [ ] `src/styles/pixel.css`: reset + rejilla de 4px + `image-rendering:pixelated` global
-- [ ] Componente `PxFrame.astro` — el marco de panel de 4px con esquinas de píxel
-- [ ] Componente `PxButton.astro` — botón con sombra dura y estado `:active` hundido
+- [x] Fijar la **paleta de 16 colores** como variables CSS → `src/styles/paleta.css`
+- [x] Autoalojar `Press Start 2P` y `VT323` en `public/fonts/` (30 KB; comprobado que la primera tiene ñ y acentos)
+- [x] `src/styles/pixel.css`: reset + rejilla de 4px + `image-rendering:pixelated` global
+- [x] Marco pixel `.marco` — esquinas mordidas sólo con `box-shadow`, sin imágenes. Se resolvió como clase, no como componente: se usa en cualquier etiqueta y no obliga a envolver nada
+- [ ] Componente `PxButton.astro` — botón con sombra dura y estado `:active` hundido *(de momento resuelto ad hoc en cada sitio)*
 - [ ] Componente `PxBar.astro` — barra de atributo por bloques
 - [ ] Componente `PxDialog.astro` — cuadro de diálogo con máquina de escribir
-- [ ] Utilidad `steps()` para TODAS las transiciones (nada de easing suave)
-- [ ] Soporte `prefers-reduced-motion`
+- [x] Todas las transiciones y animaciones con `steps()`
+- [x] Soporte `prefers-reduced-motion` + interruptor del CRT que se recuerda
 - [ ] Transición entre páginas tipo "cortina de píxeles" con View Transitions
 
 ## 3 · FASE 2 — Portada `/`
 
-- [ ] Pantalla de consola: planeta pixel + `LUTUM` + `EL MUNDO DE BARRO` + `PULSA ENTER`
-- [ ] Estrellas de fondo animadas (canvas a baja resolución)
-- [ ] Efecto CRT: scanlines + viñeta + ligera aberración
-- [ ] Al entrar/bajar → bloque **Perfil del mundo**: los 6 ejes en tarjetas pixel
-- [ ] Bloque **La receta divina**: la tabla sentimiento + objeto + parte, en versión pixel
-- [ ] Bloque **La estantería de Cladis**: los 4 objetos-portal flotantes
-- [ ] Pie con contadores (13 deidades / 11 hechos / 11 lugares)
+- [x] Pantalla de consola: planeta pixel + `LUTUM` + `EL MUNDO DE BARRO` + `PULSA ENTER` (que funciona de verdad)
+- [x] Estrellas de fondo animadas a 1/4 de resolución y 12 fps. El lienzo se mide del hueco real: fijarlo a 320×180 hacía que en ventanas estrechas los píxeles salieran rectangulares
+- [x] Efecto CRT: scanlines + viñeta, con interruptor
+- [x] Bloque **Perfil del mundo**: los 6 ejes en tarjetas pixel
+- [x] Bloque **La receta divina**: fórmula de crafteo + tabla de los nueve accidentes
+- [x] Bloque **La estantería de Cladis**: los 4 objetos-portal flotantes
+- [x] Pie con contadores
 
 ## 4 · FASE 3 — Panteón `/panteon` *(la pantalla principal)*
 
@@ -137,12 +137,12 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 9 · FASE 8 — Astro y despliegue
 
-- [ ] `astro.config.mjs` con `site` y `base` correctos
+- [x] `astro.config.mjs` con `site` y `base` correctos (verificado: todas las rutas del build llevan `/Lutum/`)
 - [ ] Rutas dinámicas `/deidad/[slug]`, `/lugar/[slug]`, `/historia/[anio]`
-- [ ] Workflow de GitHub Actions con `withastro/action`
-- [ ] Activar Pages en el repo, rama `gh-pages` o artefacto
-- [ ] Comprobar que todas las rutas de imagen usan `import.meta.env.BASE_URL`
-- [ ] `404.astro` en pixel art
+- [x] Workflow de GitHub Actions con `withastro/action` — **el job de construir ya pasa en verde**
+- [ ] ⚠️ **BLOQUEADO — lo tiene que hacer Cristina:** *Settings → Pages → Source = «GitHub Actions»*. Yo soy colaborador, no admin, y por API da 404. El job de desplegar se queda en cola hasta que lo active
+- [x] Todas las rutas pasan por `src/lib/rutas.ts` (`url()` y `pagina()`)
+- [x] `404.astro` en pixel art
 - [ ] Meta tags + Open Graph con el planeta
 
 ## 10 · FASE 9 — Pulido
