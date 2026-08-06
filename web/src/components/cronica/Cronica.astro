@@ -371,6 +371,13 @@ import { url } from '../../lib/rutas';
   medir(); pintar();
   addEventListener('resize', () => { medir(); pintar(); });
 
+  /* El `resize` de la ventana no basta: quien puede cambiar de tamaño es el
+     contenedor, no la ventana. Si el lienzo se mide cuando todavía vale cero
+     —pestaña en segundo plano, panel aún sin desplegar— se queda clavado al
+     mínimo y ya no se entera de nada. Esto es lo mismo que le pasó al mapa
+     del mundo, pero ahí se veía porque salía del revés. */
+  new ResizeObserver(() => { medir(); pintar(); }).observe(cv);
+
   addEventListener('wheel', (e) => {
     e.preventDefault();
     irA(destino + (Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX) * 2.2);

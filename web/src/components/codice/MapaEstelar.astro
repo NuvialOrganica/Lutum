@@ -395,6 +395,13 @@ const datosCliente = {
   refrescar();
   addEventListener('resize', refrescar);
 
+  /* El `resize` de la ventana no basta: quien puede cambiar de tamaño es el
+     contenedor, no la ventana. Si el lienzo se mide cuando todavía vale cero
+     —pestaña en segundo plano, panel aún sin desplegar— se queda clavado al
+     mínimo y ya no se entera de nada. Esto es lo mismo que le pasó al mapa
+     del mundo, pero ahí se veía porque salía del revés. */
+  new ResizeObserver(refrescar).observe(cv);
+
   /* ------------------------------------------------------------ ratón */
   let arrastrando = false, movido = false, px = 0, py = 0;
 

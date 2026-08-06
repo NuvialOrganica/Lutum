@@ -256,16 +256,52 @@ import { url } from '../../lib/rutas';
   // Escala a la que el mapa cabe entero. Sirve para que el doble toque sepa
   // si toca acercar o volver a la vista completa.
   let escalaAjuste = 1;
+
+  /** Alto que se come la barra de abajo. Se mide, no se supone. */
+  function altoBarra(): number {
+    const b = mundo.querySelector<HTMLElement>('.barra');
+    return b ? b.getBoundingClientRect().height : 0;
+  }
+
   function ajustar() {
     const c = mundo.getBoundingClientRect();
-    escala = Math.min(c.width / ANCHO, (c.height - 56) / ALTO);
+    const util = c.height - altoBarra();
+
+    // Si todavía no hay caja de la que fiarse no se encaja nada. Sin esta
+    // guarda, con alto 0 la cuenta daba escala NEGATIVA y el mapa salía
+    // del revés y diminuto: se vio en producción. Pasa cuando el navegador
+    // aún no ha maquetado, o cuando la página vuelve de segundo plano.
+    if (c.width < 1 || util < 1) return;
+
+    escala = Math.max(0.02, Math.min(c.width / ANCHO, util / ALTO));
     escalaAjuste = escala;
     x = (c.width - ANCHO * escala) / 2;
-    y = (c.height - 56 - ALTO * escala) / 2;
+    y = (util - ALTO * escala) / 2;
     aplicar();
   }
+
   if (mapa.complete) ajustar(); else mapa.addEventListener('load', ajustar);
   addEventListener('resize', ajustar);
+
+  /* Reintento hasta que el contenedor tenga medidas de verdad.
+     `resize` de la ventana no basta: el que cambia de tamaño puede ser el
+     contenedor, no la ventana. Mientras el mapa siga sin encajar, cada
+     medida nueva vuelve a intentarlo, y en cuanto encaja se deja de mirar. */
+  let encajado = false;
+  function intentarEncajar() {
+    if (encajado) return;
+    ajustar();
+    // ajustar() no toca nada si aun no hay caja; se sabe que ha entrado
+    // porque deja de valer el 1 de partida.
+    if (escalaAjuste !== 1) { encajado = true; vigilante.disconnect(); }
+  }
+  const vigilante = new ResizeObserver(intentarEncajar);
+  vigilante.observe(mundo);
+
+  // Red de seguridad: el observador necesita que el navegador reparta
+  // fotogramas, y una pestana en segundo plano puede no darlos. Unos pocos
+  // reintentos espaciados cubren ese hueco y luego se callan.
+  for (const espera of [0, 60, 200, 600, 1500]) setTimeout(intentarEncajar, espera);
 
   function zoom(factor: number, cx?: number, cy?: number) {
     const c = mundo.getBoundingClientRect();
