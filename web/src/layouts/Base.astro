@@ -2,6 +2,7 @@
 import '../styles/paleta.css';
 import '../styles/pixel.css';
 import { url } from '../lib/rutas';
+import PunteroPixel from '../components/PunteroPixel.astro';
 
 interface Props {
   titulo: string;
@@ -58,17 +59,27 @@ const {
        donde no hay puntero que valga, y con el ratón fino de siempre como
        respaldo por si la imagen no carga. */
     @media (hover:hover) and (pointer:fine){
+      /* Primera vía: el cursor de CSS. Funciona en la mayoría de sitios y no
+         cuesta nada, así que se deja como red de seguridad para cuando no
+         haya JavaScript. */
       html{ cursor:var(--cursorPx) 1 1, auto }
       a, button, summary, label, [role="button"], input[type="checkbox"]{
         cursor:var(--cursorMano) 13 3, pointer;
       }
       [disabled], [aria-disabled="true"]{ cursor:var(--cursorPx) 1 1, not-allowed }
+
+      /* Segunda vía: el puntero dibujado en la página. Cuando su script
+         arranca marca el html y se apaga el del sistema, que en algunos
+         entornos ni siquiera llegaba a cambiarse. */
+      html.sin-cursor, html.sin-cursor *{ cursor:none !important }
     }
   </style>
 </head>
 
 <body class={fija ? 'fija' : ''}>
   <slot />
+
+  <PunteroPixel />
 
   <div class="crt-vineta" aria-hidden="true"></div>
   <div class="crt-lineas" aria-hidden="true"></div>

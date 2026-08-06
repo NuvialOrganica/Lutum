@@ -1,0 +1,83 @@
+---
+import { url } from '../lib/rutas';
+
+/**
+ * Puntero de ratón dibujado en la página, no delegado al sistema.
+ *
+ * Por qué no basta con `cursor: url(...)`: hay entornos que sencillamente
+ * ignoran el cursor de CSS —webviews embebidas, utilidades de personalización
+ * de cursor, algunos ajustes de accesibilidad de Windows— y el usuario sigue
+ * viendo el puntero del sistema. Aquí el cursor es un `div` normal y corriente,
+ * así que se ve siempre, pase lo que pase.
+ *
+ * La regla `cursor:none` se pone desde JavaScript, nunca en el CSS estático:
+ * si el script no llegara a ejecutarse, quedarse sin puntero sería mucho peor
+ * que no tener el bonito.
+ */
+---
+
+<div id="puntero" aria-hidden="true" hidden>
+  <img class="p-cincel" src={url('assets/ui/cursor.png')} width="48" height="48" alt="" />
+  <img class="p-mano" src={url('assets/ui/mano.png')} width="48" height="48" alt="" />
+</div>
+
+<style>
+  #puntero{
+    position:fixed; left:0; top:0; z-index:120;
+    pointer-events:none;
+    width:48px; height:48px;
+    will-change:transform;
+  }
+  #puntero img{
+    position:absolute; left:0; top:0;
+    width:48px; height:48px;
+    image-rendering:pixelated;
+    display:none;
+    /* la punta del dibujo tiene que caer justo donde está el ratón */
+    filter:drop-shadow(2px 2px 0 rgba(10,4,16,.7));
+  }
+  #puntero[data-forma="cincel"] .p-cincel{ display:block; transform:translate(-1px,-1px) }
+  #puntero[data-forma="mano"]   .p-mano  { display:block; transform:translate(-13px,-3px) }
+
+  /* al pulsar, el puntero se hunde un píxel: acuse de recibo */
+  #puntero[data-pulsado] img{ translate:2px 2px }
+
+  /* sin ratón fino no pinta nada */
+  @media (hover:none), (pointer:coarse){ #puntero{ display:none !important } }
+</style>
+
+<script>
+  const puntero = document.getElementById('puntero');
+  if (puntero && matchMedia('(hover:hover) and (pointer:fine)').matches) {
+    // Sólo ahora se esconde el cursor del sistema: si este script no corriera,
+    // el usuario se quedaría sin puntero.
+    document.documentElement.classList.add('sin-cursor');
+    puntero.hidden = false;
+    puntero.dataset.forma = 'cincel';
+
+    const CLICABLE = 'a,button,summary,label,[role="button"],input,select,textarea';
+
+    // Se pinta en el propio evento, sin requestAnimationFrame. El navegador ya
+    // agrupa los pointermove por fotograma, así que no se gana nada
+    // aplazándolo, y sí se pierde: si la pestaña deja de componer fotogramas
+    // el rAF no dispara y el puntero se queda clavado.
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+      // Se ajusta a una rejilla de 2 px: el puntero también se mueve a saltos,
+      // como todo lo demás de esta web.
+      const x = Math.round(e.clientX / 2) * 2;
+      const y = Math.round(e.clientY / 2) * 2;
+      puntero!.style.transform = `translate(${x}px, ${y}px)`;
+      const sobre = (e.target as HTMLElement)?.closest?.(CLICABLE);
+      puntero!.dataset.forma = sobre ? 'mano' : 'cincel';
+    }, { passive: true });
+
+    addEventListener('pointerdown', () => { puntero!.dataset.pulsado = ''; });
+    addEventListener('pointerup', () => { delete puntero!.dataset.pulsado; });
+
+    // fuera de la ventana no hay nada que dibujar
+    document.addEventListener('pointerleave', () => { puntero!.style.opacity = '0'; });
+    document.addEventListener('pointerenter', () => { puntero!.style.opacity = '1'; });
+    addEventListener('blur', () => { puntero!.style.opacity = '0'; });
+  }
+</script>
