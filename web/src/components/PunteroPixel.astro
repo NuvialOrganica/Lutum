@@ -48,11 +48,10 @@ import { url } from '../lib/rutas';
 
 <script>
   const puntero = document.getElementById('puntero');
+  // Este componente sólo se ofrece; quien lo enciende o lo apaga es Ajustes,
+  // que corre después y sabe lo que eligió el usuario la última vez.
   if (puntero && matchMedia('(hover:hover) and (pointer:fine)').matches) {
-    // Sólo ahora se esconde el cursor del sistema: si este script no corriera,
-    // el usuario se quedaría sin puntero.
-    document.documentElement.classList.add('sin-cursor');
-    puntero.hidden = false;
+    puntero.dataset.disponible = '';
     puntero.dataset.forma = 'cincel';
 
     const CLICABLE = 'a,button,summary,label,[role="button"],input,select,textarea';

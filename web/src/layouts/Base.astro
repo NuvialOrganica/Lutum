@@ -3,6 +3,7 @@ import '../styles/paleta.css';
 import '../styles/pixel.css';
 import { url } from '../lib/rutas';
 import PunteroPixel from '../components/PunteroPixel.astro';
+import Ajustes from '../components/Ajustes.astro';
 
 interface Props {
   titulo: string;
@@ -84,36 +85,10 @@ const {
   <div class="crt-vineta" aria-hidden="true"></div>
   <div class="crt-lineas" aria-hidden="true"></div>
 
-  <button id="crt" class="px" type="button" aria-pressed="true">CRT</button>
+  <Ajustes />
 
 <style>
   body.fija{ height:100svh; overflow:hidden }
-
-  #crt{
-    position:fixed; right:var(--u3); bottom:var(--u3); z-index:95;
-    font-size:8px; letter-spacing:.16em; color:var(--c04);
-    padding:var(--u) var(--u2);
-    box-shadow:0 0 0 2px var(--c03);
-    transition:color .16s steps(2), box-shadow .16s steps(2);
-  }
-  #crt:hover{ color:var(--c10); box-shadow:0 0 0 2px var(--c08) }
-  #crt[aria-pressed="false"]{ color:var(--c03) }
 </style>
-
-<script>
-  // Interruptor del efecto CRT. Hay gente a la que las scanlines le molestan
-  // de verdad, así que se puede apagar y se recuerda.
-  const boton = document.getElementById('crt')!;
-  const raiz = document.documentElement;
-  const guardado = localStorage.getItem('lutum-crt');
-  if (guardado === 'off') { raiz.dataset.crt = 'off'; boton.setAttribute('aria-pressed', 'false'); }
-
-  boton.addEventListener('click', () => {
-    const apagado = raiz.dataset.crt === 'off';
-    raiz.dataset.crt = apagado ? 'on' : 'off';
-    boton.setAttribute('aria-pressed', String(apagado));
-    localStorage.setItem('lutum-crt', apagado ? 'on' : 'off');
-  });
-</script>
 </body>
 </html>

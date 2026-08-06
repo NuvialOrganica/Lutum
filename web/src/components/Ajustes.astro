@@ -1,0 +1,81 @@
+---
+/**
+ * Los dos interruptores de la esquina: efecto CRT y puntero pixel.
+ *
+ * Ambos existen por el mismo motivo: son adornos que a alguna gente le
+ * estorban de verdad. Las scanlines cansan la vista y hacen moiré en según
+ * qué pantallas; y el puntero dibujado se duplica si tienes una utilidad de
+ * personalización de cursor, porque ésas pintan por encima del navegador y
+ * no hay CSS que las tape.
+ *
+ * La elección se recuerda.
+ */
+---
+
+<div class="ajustes">
+  <button class="pieza px" id="crt" type="button" aria-pressed="true">CRT</button>
+  <button class="pieza px" id="raton" type="button" aria-pressed="true">RATÓN</button>
+</div>
+
+<style>
+  .ajustes{
+    position:fixed; right:var(--u3); bottom:var(--u3); z-index:95;
+    display:flex; gap:var(--u);
+  }
+  .pieza{
+    font-size:8px; letter-spacing:.16em; color:var(--c04);
+    padding:var(--u) var(--u2);
+    box-shadow:0 0 0 2px var(--c03);
+    transition:none;
+  }
+  .pieza:hover{ color:var(--c10); box-shadow:0 0 0 2px var(--c08) }
+  .pieza[aria-pressed="true"]{ color:var(--c13); box-shadow:0 0 0 2px var(--c05) }
+  .pieza[aria-pressed="false"]{ color:var(--c03); box-shadow:0 0 0 2px var(--c02) }
+</style>
+
+<script>
+  type Ajuste = {
+    boton: HTMLElement; clave: string;
+    aplicar: (encendido: boolean) => void;
+    soloConRaton?: boolean;
+  };
+
+  const raiz = document.documentElement;
+
+  const ajustes: Ajuste[] = [
+    {
+      boton: document.getElementById('crt')!,
+      clave: 'lutum-crt',
+      aplicar: (on) => { raiz.dataset.crt = on ? 'on' : 'off'; },
+    },
+    {
+      boton: document.getElementById('raton')!,
+      clave: 'lutum-raton',
+      soloConRaton: true,
+      aplicar: (on) => {
+        const puntero = document.getElementById('puntero');
+        // Sin puntero propio se devuelve el mando al del sistema, o quien
+        // navegue se queda sin nada con lo que apuntar.
+        raiz.classList.toggle('sin-cursor', on && Boolean(puntero));
+        if (puntero) puntero.hidden = !on;
+      },
+    },
+  ];
+
+  const hayRaton = matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  for (const a of ajustes) {
+    if (!a.boton) continue;
+    if (a.soloConRaton && !hayRaton) { a.boton.remove(); continue; }
+    const encendido = localStorage.getItem(a.clave) !== 'off';
+    a.boton.setAttribute('aria-pressed', String(encendido));
+    a.aplicar(encendido);
+
+    a.boton.addEventListener('click', () => {
+      const ahora = a.boton.getAttribute('aria-pressed') !== 'true';
+      a.boton.setAttribute('aria-pressed', String(ahora));
+      localStorage.setItem(a.clave, ahora ? 'on' : 'off');
+      a.aplicar(ahora);
+    });
+  }
+</script>
