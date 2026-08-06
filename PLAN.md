@@ -175,7 +175,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
       escalarlo), el rótulo de Cladis se cruzaba con la órbita, y el buscador
       del códice se metía debajo del botón de volver
 - [ ] Sonido opcional (blips de menú), con interruptor y apagado por defecto
-- [ ] Kintsugi en el bloque «la humanidad está restaurada» (si D4 = sí)
+- [x] ~~Kintsugi en el bloque «la humanidad está restaurada»~~ — descartado en D4
 - [x] Estados vacíos bonitos para las entradas pendientes (códice, crónica, panteón y lugares)
 - [ ] Revisión de contraste y tamaños de texto (las fuentes pixel cansan a tamaño pequeño)
 - [ ] Prueba en Chrome, Firefox y móvil real
