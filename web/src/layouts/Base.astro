@@ -39,6 +39,7 @@ const {
     fuenteTitulo: `url('${url('fonts/PressStart2P.woff2')}')`,
     fuenteTexto:  `url('${url('fonts/VT323.woff2')}')`,
     cursorPx:     `url('${url('assets/ui/cursor.png')}')`,
+    cursorMano:   `url('${url('assets/ui/mano.png')}')`,
   }}>
     /* font-display:block a propósito: con tipografías bitmap el «swap» enseña
        un instante de Arial y salta todo el maquetado. */
@@ -51,6 +52,17 @@ const {
       font-family:'PxTexto';
       src:var(--fuenteTexto) format('woff2');
       font-weight:400; font-style:normal; font-display:block;
+    }
+
+    /* El puntero también es pixel art. Se desactiva en pantallas táctiles,
+       donde no hay puntero que valga, y con el ratón fino de siempre como
+       respaldo por si la imagen no carga. */
+    @media (hover:hover) and (pointer:fine){
+      html{ cursor:var(--cursorPx) 2 2, auto }
+      a, button, summary, label, [role="button"], input[type="checkbox"]{
+        cursor:var(--cursorMano) 13 3, pointer;
+      }
+      [disabled], [aria-disabled="true"]{ cursor:var(--cursorPx) 2 2, not-allowed }
     }
   </style>
 </head>

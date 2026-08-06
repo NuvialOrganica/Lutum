@@ -1,6 +1,7 @@
 ---
 import { PORTALES, CIFRAS } from '../data/mundo';
 import { url, pagina } from '../lib/rutas';
+import { hayAsset } from '../lib/assets';
 ---
 
 <section class="estanteria" id="estanteria">
@@ -17,7 +18,7 @@ import { url, pagina } from '../lib/rutas';
       <li>
         <a class="portal marco" href={pagina(p.destino)} data-id={p.id}>
           <div class="peana">
-            {p.sprite ? (
+            {p.sprite && hayAsset(p.sprite) ? (
               <img class="sprite" src={url(p.sprite)} width="128" height="128" alt="" />
             ) : (
               /* El portal de la Crónica es un cubo negro plano a propósito:
@@ -33,7 +34,7 @@ import { url, pagina } from '../lib/rutas';
                 <rect x="15" y="16" width="2"  height="4"  fill="#4A1B3E" />
               </svg>
             )}
-            {p.provisional && <span class="temp px">PROVISIONAL</span>}
+            {p.provisional && !hayAsset(p.sprite ?? '') && <span class="temp px">PROVISIONAL</span>}
           </div>
           <h3 class="px">{p.nombre}</h3>
           <p>{p.lema}</p>

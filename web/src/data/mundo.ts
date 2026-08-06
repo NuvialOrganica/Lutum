@@ -114,7 +114,7 @@ export const PORTALES: Portal[] = [
     nombre: 'La Crónica',
     lema: 'Mil ciento setenta y seis años en línea recta',
     destino: 'cronica',
-    sprite: null,
+    sprite: 'assets/objetos/reloj.png',
     provisional: true,
   },
   {

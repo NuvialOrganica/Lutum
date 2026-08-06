@@ -1,0 +1,29 @@
+---
+import { pagina } from '../lib/rutas';
+
+interface Props {
+  /** Ruta de destino, sin barras. Vacío = portada. */
+  a?: string;
+  texto: string;
+}
+const { a = '', texto } = Astro.props;
+---
+
+<a class="volver px" href={pagina(a)}>
+  <span class="flecha" aria-hidden="true">◂</span>
+  <span>{texto}</span>
+</a>
+
+<style>
+  .volver{
+    position:fixed; left:var(--u4); top:var(--u4); z-index:30;
+    display:flex; align-items:center; gap:var(--u2);
+    font-size:8px; letter-spacing:.16em; color:var(--c09);
+    background:var(--c00); padding:var(--u3) var(--u4);
+    box-shadow:0 0 0 2px var(--c05);
+    transition:none;
+  }
+  .volver:hover{ color:var(--c00); background:var(--c13); box-shadow:0 0 0 2px var(--c10) }
+  .volver:active{ transform:translate(2px,2px) }
+  .flecha{ font-size:12px; line-height:1 }
+</style>

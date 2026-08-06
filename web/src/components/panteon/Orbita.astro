@@ -4,6 +4,7 @@ import FichaDeidad from './FichaDeidad.astro';
 import Estrellas from '../Estrellas.astro';
 import { DEIDADES, ALINEAMIENTOS, porSlug } from '../../data/deidades';
 import { url, pagina } from '../../lib/rutas';
+import { hayAsset } from '../../lib/assets';
 
 // Cladis va en el centro: es el planeta y es la madre de todo lo demás.
 const cladis = porSlug('cladis')!;
@@ -11,7 +12,7 @@ const orbitan = DEIDADES.filter((d) => d.slug !== 'cladis');
 
 const PORTALES = [
   { icono: 'assets/objetos/telescopio.png', destino: 'codice',  nombre: 'El Códice',   pos: 'ar' },
-  { icono: null,                            destino: 'cronica', nombre: 'La Crónica',  pos: 'ab' },
+  { icono: 'assets/objetos/reloj.png',      destino: 'cronica', nombre: 'La Crónica',  pos: 'ab' },
   { icono: 'assets/objetos/pergamino.png',  destino: 'lugares', nombre: 'Los Lugares', pos: 'ai' },
 ];
 ---
@@ -69,7 +70,7 @@ const PORTALES = [
   <nav class="portales" aria-label="Otras secciones">
     {PORTALES.map((p) => (
       <a class={`portal portal--${p.pos}`} href={pagina(p.destino)} title={p.nombre}>
-        {p.icono
+        {p.icono && hayAsset(p.icono)
           ? <img src={url(p.icono)} width="128" height="128" alt="" />
           : <span class="cubo" aria-hidden="true"></span>}
         <span class="px nombre">{p.nombre}</span>
@@ -299,24 +300,54 @@ const PORTALES = [
   if (!quieto) bucle();
   addEventListener('resize', colocar);
 
-  /* ---------- arrastrar para girar ---------- */
+  /* ---------- arrastrar para girar ---------------------------------------
+     Ojo con dos trampas que ya cayeron una vez:
+
+     1. `setPointerCapture` en el pointerdown redirige el `click` al elemento
+        que captura, así que el clic nunca llegaba al botón del dios. Ahora
+        sólo se captura cuando el arrastre ha empezado de verdad.
+     2. Un umbral de 2 px cuenta como arrastre el temblor normal de la mano
+        al hacer clic. Se sube a 6 px y se mide contra el punto de partida,
+        no contra el fotograma anterior.                                    */
+  const UMBRAL = 6;
+  let inicioX = 0, inicioY = 0, capturado = false;
+
   rueda.addEventListener('pointerdown', (e) => {
-    arrastrando = true; movido = false; ultimoX = e.clientX;
-    rueda.setPointerCapture(e.pointerId);
+    arrastrando = true; movido = false; capturado = false;
+    inicioX = ultimoX = e.clientX; inicioY = e.clientY;
   });
+
   rueda.addEventListener('pointermove', (e) => {
     if (!arrastrando) return;
+    if (!movido && Math.hypot(e.clientX - inicioX, e.clientY - inicioY) > UMBRAL) {
+      movido = true;
+      // ya es un arrastre: ahora sí conviene capturar, para no perder el
+      // puntero si se sale de la rueda
+      try { rueda.setPointerCapture(e.pointerId); capturado = true; } catch { /* da igual */ }
+    }
+    if (!movido) return;
     const dx = e.clientX - ultimoX;
-    if (Math.abs(dx) > 2) movido = true;
     giro += dx * 0.3;
     vel = dx * 0.22;
     ultimoX = e.clientX;
     colocar();
   });
-  addEventListener('pointerup', () => { arrastrando = false; });
+
+  rueda.addEventListener('pointerup', (e) => {
+    if (!arrastrando) return;
+    arrastrando = false;
+    if (capturado) { try { rueda.releasePointerCapture(e.pointerId); } catch { /* da igual */ } }
+    if (movido) return;
+    // No se ha arrastrado: es un clic. Se resuelve a mano con el punto exacto
+    // en vez de fiarlo al evento `click`, que la captura puede desviar.
+    const bajo = document.elementFromPoint(e.clientX, e.clientY);
+    const boton = bajo?.closest<HTMLElement>('[data-slug]');
+    if (boton?.dataset.slug) abrir(boton.dataset.slug);
+  });
+  rueda.addEventListener('pointercancel', () => { arrastrando = false; });
 
   /* ---------- abrir y cerrar la ficha ---------- */
-  function abrir(slug: string) {
+  function abrir(slug: string, empujar = true) {
     const hoja = hojas.find((h) => h.dataset.slug === slug);
     if (!hoja) return;
     hojas.forEach((h) => { h.hidden = h !== hoja; });
@@ -328,23 +359,38 @@ const PORTALES = [
     cajon.setAttribute('aria-hidden', 'false');
     cuerpo.scrollTop = 0;
     objetivo = 0.1;                          // la rueda casi se para al leer
-    history.replaceState(null, '', `#${slug}`);
+    // Se apila en el historial para que el botón «atrás» del navegador (y el
+    // gesto de atrás del móvil) cierre la ficha, que es lo que espera todo
+    // el mundo.
+    if (empujar) {
+      if (location.hash) history.replaceState(null, '', `#${slug}`);
+      else history.pushState(null, '', `#${slug}`);
+    }
   }
 
-  function cerrar() {
+  function cerrar(volviendo = false) {
     delete panteon.dataset.abierto;
     cajon.setAttribute('aria-hidden', 'true');
     astros.forEach((a) => delete a.dataset.activo);
     objetivo = VEL_BASE;
-    history.replaceState(null, '', location.pathname);
+    if (!volviendo && location.hash) history.back();
   }
 
-  rueda.addEventListener('click', (e) => {
-    if (movido) return;                      // era un arrastre, no un clic
-    const boton = (e.target as HTMLElement).closest<HTMLElement>('[data-slug]');
-    if (boton?.dataset.slug) abrir(boton.dataset.slug);
+  addEventListener('popstate', () => {
+    const slug = location.hash.slice(1);
+    if (slug) abrir(slug, false);
+    else cerrar(true);
   });
-  document.getElementById('cerrar')?.addEventListener('click', cerrar);
+
+  // Con teclado el pointerup no llega, así que el `click` sigue haciendo falta
+  // para quien navega con tabulador.
+  rueda.addEventListener('click', (e) => {
+    if (!e.detail) {                         // detail 0 = disparado por teclado
+      const boton = (e.target as HTMLElement).closest<HTMLElement>('[data-slug]');
+      if (boton?.dataset.slug) abrir(boton.dataset.slug);
+    }
+  });
+  document.getElementById('cerrar')?.addEventListener('click', () => cerrar());
   addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
 
   // saltar de un dios a otro desde los vínculos
@@ -355,7 +401,7 @@ const PORTALES = [
 
   // enlace directo: /panteon/#lydara abre esa ficha
   const inicial = location.hash.slice(1);
-  if (inicial) abrir(inicial);
+  if (inicial) abrir(inicial, false);
 
   /* ---------- filtro por alineamiento ---------- */
   const chips = Array.from(document.querySelectorAll<HTMLElement>('.chip'));

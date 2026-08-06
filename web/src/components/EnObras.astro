@@ -1,5 +1,6 @@
 ---
 import Estrellas from './Estrellas.astro';
+import Volver from './Volver.astro';
 import { pagina } from '../lib/rutas';
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 }
 const { seccion, que, fase } = Astro.props;
 ---
+
+<Volver texto="LUTUM" />
 
 <section class="obras">
   <Estrellas densidad={16} />

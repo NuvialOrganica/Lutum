@@ -55,7 +55,7 @@ GRUPOS = {
     },
     "objetos": {
         "res": (128, 128), "colores": 32, "alfa": True, "destino": "objetos",
-        "patron": ["martillo", "telescopio", "pergamino"],
+        "patron": ["martillo", "telescopio", "pergamino", "reloj"],
         "nota": "se muestran a 256 px (x2)",
     },
     "historia": {
@@ -213,6 +213,56 @@ def procesar(origen: Path, destino: Path, res, colores, con_alfa) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# CURSORES
+# El navegador NO escala las imágenes de cursor, así que se exportan ya
+# ampliadas por un entero. Y el punto sensible (la punta) tiene que quedar
+# cerca del origen, o el ratón "pincha" donde no toca.
+# ---------------------------------------------------------------------------
+
+# Mano señalando, dibujada a mano. 1 = contorno, 2 = relleno.
+MANO = [
+    "................", "....11..........", "...1221.........", "...1221.........",
+    "...1221.........", "...1221.........", "...122111.......", "...12212211.....",
+    "...1221221211...", ".111221221221...", "122122222221....", "122222222221....",
+    ".12222222221....", ".12222222221....", "..122222221.....", "...1111111......",
+]
+TINTA, CREMA = (38, 16, 31, 255), (247, 227, 176, 255)
+
+
+def generar_cursores(dir_out: Path) -> list[str]:
+    """Deja en ui/ los dos cursores listos para usar en CSS."""
+    hechos = []
+    ui = dir_out / "ui"
+    ui.mkdir(parents=True, exist_ok=True)
+
+    # --- puntero normal: el cincel, espejado para que apunte arriba-izquierda
+    origen = ui / "cursor.png"
+    if origen.is_file():
+        im = Image.open(origen).convert("RGBA")
+        im = im.transpose(Image.FLIP_LEFT_RIGHT)
+        im = recortar_a_contenido(im)
+        lienzo = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+        lienzo.paste(im, (1, 1))                     # la punta, casi en el origen
+        lienzo = lienzo.resize((64, 64), Image.NEAREST)
+        lienzo.save(ui / "cursor.png")
+        hechos.append("cursor.png  64x64  punta en 2,2")
+
+    # --- puntero de cosas clicables
+    mano = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = mano.load()
+    for y, fila in enumerate(MANO):
+        for x, c in enumerate(fila):
+            if c == "1":
+                px[x, y] = TINTA
+            elif c == "2":
+                px[x, y] = CREMA
+    mano = mano.resize((48, 48), Image.NEAREST)
+    mano.save(ui / "mano.png")
+    hechos.append("mano.png    48x48  punta en 13,3")
+    return hechos
+
+
 def kb(n: int) -> str:
     return f"{n/1024:.0f} KB" if n < 1024 * 1024 else f"{n/1048576:.1f} MB"
 
@@ -310,6 +360,11 @@ def main() -> int:
             ruta = hoja_de_contacto(nombre, cfg, dir_out)
             if ruta:
                 print(f"  hoja de revisión -> {ruta.relative_to(RAIZ)}")
+
+    if not args.listar and not args.solo:
+        print("\n\033[95mCURSORES\033[0m")
+        for linea in generar_cursores(dir_out):
+            print(f"  ✓ {linea}")
 
     if not args.listar and hechos:
         print(f"\n\033[92m{hechos} imágenes\033[0m  "
