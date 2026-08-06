@@ -11,7 +11,7 @@ export function getStaticPaths() {
 const { d } = Astro.props;
 ---
 <Base titulo={d.nombre} descripcion={`${d.nombre}, ${d.titulo}. ${d.anioTexto}.`}>
-  <Volver a="panteon" texto="EL PANTEÓN" />
+  <Volver a="panteon" texto="EL PANTEÓN" enMovil />
   <div class="pagina">
     <Estrellas densidad={12} clase="cielo" />
     <div class="columna">

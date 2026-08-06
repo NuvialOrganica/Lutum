@@ -43,7 +43,9 @@ const datosCliente = {
   <p class="ayuda px" id="ayuda">ARRASTRA EL CIELO · RUEDA PARA ACERCAR · PULSA UNA ESTRELLA</p>
 
   {/* ---------- panel ---------- */}
-  <aside class="panel" id="panel" aria-hidden="true" aria-label="Ficha del códice">
+  <div class="hoja-velo" id="velo" aria-hidden="true"></div>
+  <aside class="panel hoja-inferior" id="panel" aria-hidden="true" aria-label="Ficha del códice">
+    <button class="hoja-asa" type="button" aria-label="Arrastra hacia abajo para cerrar"></button>
     <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
     <div class="panel-cuerpo" id="panel-cuerpo">
       {NODOS.map((n) => (
@@ -56,11 +58,14 @@ const datosCliente = {
 <script is:inline set:html={`window.__CODICE__ = ${JSON.stringify(datosCliente)};`} />
 
 <style>
-  .codice{ position:relative; height:100svh; overflow:hidden; background:var(--c00) }
+  .codice{ position:relative; height:calc(100svh - var(--barra)); overflow:hidden; background:var(--c00) }
 
   #cielo{
     position:absolute; inset:0; width:100%; height:100%;
     display:block; image-rendering:pixelated; cursor:grab; z-index:1;
+    /* Sin esto el navegador se queda los gestos de dos dedos para su propio
+       zoom de pagina y los eventos de puntero no llegan nunca. */
+    touch-action:none;
   }
   #cielo.arrastrando{ cursor:grabbing }
 
@@ -163,6 +168,9 @@ const datosCliente = {
 </style>
 
 <script>
+  import { montarHoja } from '../../lib/hoja';
+  import { montarGestos, umbralArrastre } from '../../lib/gestos';
+
   type NodoC = { s: string; t: string; p: number; n: string; sub: string;
                  x: number; y: number; vx: number; vy: number; on: boolean };
 
@@ -350,14 +358,20 @@ const datosCliente = {
     return mejor;
   }
 
+  let umbral = 6, dedos = 0;
   cv.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') dedos++;
+    // Dos dedos es pellizco, no arrastre: si no, el cielo se va de viaje
+    // mientras se intenta acercar.
+    if (dedos > 1) { arrastrando = false; cv.classList.remove('arrastrando'); return; }
     arrastrando = true; movido = false; px = e.clientX; py = e.clientY;
+    umbral = umbralArrastre(e.pointerType);
     cv.classList.add('arrastrando');
   });
   cv.addEventListener('pointermove', (e) => {
-    if (arrastrando) {
+    if (arrastrando && dedos <= 1) {
       const dx = e.clientX - px, dy = e.clientY - py;
-      if (Math.abs(dx) + Math.abs(dy) > 4) movido = true;
+      if (Math.abs(dx) + Math.abs(dy) > umbral) movido = true;
       camX -= dx * ESCALA / zoom; camY -= dy * ESCALA / zoom;
       px = e.clientX; py = e.clientY;
       pintar();
@@ -366,12 +380,31 @@ const datosCliente = {
     const n = nodoEn(e.clientX, e.clientY);
     if (n !== encima) { encima = n; pintar(); }
   });
+  const soltarDedo = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') dedos = Math.max(0, dedos - 1);
+  };
+  addEventListener('pointercancel', soltarDedo);
   addEventListener('pointerup', (e) => {
+    soltarDedo(e);
     if (!arrastrando) return;
     arrastrando = false; cv.classList.remove('arrastrando');
     if (movido) return;
     const n = nodoEn(e.clientX, e.clientY);
     if (n) abrir(n.s); else cerrar();
+  });
+
+  /* Pellizco y doble toque. El cielo se acercaba solo con la rueda, asi que
+     en el movil no habia forma de acercarlo. El zoom aqui es global, no hacia
+     un punto, asi que se ignoran las coordenadas del centro. */
+  montarGestos({
+    zona: cv,
+    acercar: (factor) => {
+      zoom = Math.min(2.6, Math.max(0.5, zoom * factor));
+      pintar();
+    },
+    ajustar: () => { zoom = 1; camX = 0; camY = 0; pintar(); },
+    estaAcercado: () => zoom > 1.05,
+    hayAlgoEn: (x, y) => Boolean(nodoEn(x, y)),
   });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
@@ -408,6 +441,9 @@ const datosCliente = {
     if (s) abrir(s, false); else cerrar(true);
   });
   document.getElementById('cerrar')!.addEventListener('click', () => cerrar());
+
+  // Gesto de movil: bajar la hoja o tocar fuera la cierra.
+  montarHoja(panel, document.getElementById('velo'), () => cerrar());
   addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
 
   // saltar de una ficha a otra, y desde el índice

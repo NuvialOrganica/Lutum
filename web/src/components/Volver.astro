@@ -5,11 +5,18 @@ interface Props {
   /** Ruta de destino, sin barras. Vacío = portada. */
   a?: string;
   texto: string;
+  /**
+   * Mantenerlo visible en el móvil. Por defecto se esconde: abajo hay barra
+   * con las cinco secciones, así que un botón que lleva a una de ellas sobra
+   * y encima roba la esquina de arriba. Sólo lo necesitan las fichas sueltas
+   * de deidad, que no son ninguna de las cinco.
+   */
+  enMovil?: boolean;
 }
-const { a = '', texto } = Astro.props;
+const { a = '', texto, enMovil = false } = Astro.props;
 ---
 
-<a class="volver px" href={pagina(a)}>
+<a class:list={['volver', 'px', { 'en-movil': enMovil }]} href={pagina(a)}>
   <span class="flecha" aria-hidden="true">◂</span>
   <span>{texto}</span>
 </a>
@@ -26,4 +33,8 @@ const { a = '', texto } = Astro.props;
   .volver:hover{ color:var(--c00); background:var(--c13); box-shadow:0 0 0 2px var(--c10) }
   .volver:active{ transform:translate(2px,2px) }
   .flecha{ font-size:12px; line-height:1 }
+
+  @media (max-width:720px){
+    .volver:not(.en-movil){ display:none }
+  }
 </style>

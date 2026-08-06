@@ -141,3 +141,63 @@ html[data-crt="off"] .crt-vineta{ display:none }
   position:absolute; width:1px; height:1px; overflow:hidden;
   clip-path:inset(50%); white-space:nowrap;
 }
+
+/* =========================================================================
+   HOJA INFERIOR DEL MÓVIL
+
+   En escritorio las fichas entran como cajón desde la derecha. En un teléfono
+   eso ocupa la pantalla entera y se cierra fatal con el pulgar: lo natural es
+   que suban desde abajo y se bajen tirando.
+
+   Vive aquí y no en cada componente porque el panteón, el códice y los
+   lugares repiten exactamente el mismo patrón con tres nombres distintos
+   (.cajon, .panel, .panel). Marcándolos con .hoja-inferior se arreglan los
+   tres de una vez y no hay tres copias que se desincronicen.
+   ========================================================================= */
+@media (max-width:720px){
+  .hoja-inferior{
+    top:auto !important; left:0 !important; right:0 !important; bottom:0 !important;
+    width:auto !important;
+    /* 88 % y no 100 %: la franja de arriba deja ver el mapa o la rueda que hay
+       detrás, que es lo que dice «esto se puede cerrar». */
+    height:88%;
+    transform:translateY(101%) !important;
+    box-shadow:0 -4px 0 var(--c05), 0 -8px 0 var(--c00) !important;
+  }
+  [data-abierto] .hoja-inferior{ transform:none !important }
+
+  /* asa de arrastre */
+  .hoja-asa{
+    display:block; flex:none;
+    padding:var(--u3) 0 var(--u2);
+    background:var(--c00); cursor:grab; touch-action:none;
+  }
+  .hoja-asa::before{
+    content:""; display:block; width:48px; height:6px; margin:0 auto;
+    background:var(--c05);
+  }
+  .hoja-asa:active{ cursor:grabbing }
+  .hoja-asa:active::before{ background:var(--c08) }
+
+  /* Mientras se arrastra manda el JS, así que se quita la transición o el
+     dedo va por delante del panel. */
+  .hoja-inferior.arrastrando{ transition:none !important }
+
+  /* velo de fondo */
+  .hoja-velo{
+    position:absolute; inset:0; z-index:19;
+    background:rgba(10,4,16,.72);
+    opacity:0; pointer-events:none;
+    transition:opacity .28s steps(7);
+  }
+  [data-abierto] .hoja-velo{ opacity:1; pointer-events:auto }
+
+  /* La X de cerrar sobra cuando se cierra tirando, pero se deja: es la única
+     forma con teclado y con lector de pantalla. Sólo se aparta del asa. */
+  .hoja-inferior .cerrar{ top:var(--u2) !important }
+}
+
+/* En escritorio nada de esto existe. */
+@media (min-width:721px){
+  .hoja-asa, .hoja-velo{ display:none }
+}

@@ -4,6 +4,7 @@ import '../styles/pixel.css';
 import { url, absoluta } from '../lib/rutas';
 import PunteroPixel from '../components/PunteroPixel.astro';
 import Ajustes from '../components/Ajustes.astro';
+import BarraMovil from '../components/BarraMovil.astro';
 
 interface Props {
   titulo: string;
@@ -96,9 +97,28 @@ const {
   <div class="crt-lineas" aria-hidden="true"></div>
 
   <Ajustes />
+  <BarraMovil />
 
 <style>
-  body.fija{ height:100svh; overflow:hidden }
+  body.fija{ height:calc(100svh - var(--barra)); overflow:hidden }
+
+  /* ---------- hueco de la barra inferior del móvil ----------------------
+     `--barra` es la altura que la barra le quita a la pantalla. Vale 0 en
+     escritorio, así que las pantallas pueden restarla siempre sin condicionar
+     nada: `height: calc(100svh - var(--barra))` funciona en los dos sitios.
+     Es la única forma de que las nueve alturas fijas del sitio dejen de
+     quedar tapadas por debajo sin llenarlo todo de consultas de medios.   */
+  :global(:root){ --barra:0px }
+  @media (max-width:720px){
+    :global(:root){ --barra:calc(56px + env(safe-area-inset-bottom, 0px)) }
+  }
+  @media (max-width:900px) and (max-height:480px){
+    :global(:root){ --barra:calc(44px + env(safe-area-inset-bottom, 0px)) }
+  }
+
+  /* La portada sí baja con scroll: necesita sitio al final para que el pie no
+     se quede debajo de la barra. */
+  body:not(.fija){ padding-bottom:var(--barra) }
 </style>
 </body>
 </html>

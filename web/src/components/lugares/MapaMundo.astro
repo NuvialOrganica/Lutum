@@ -56,7 +56,9 @@ import { url } from '../../lib/rutas';
   <p class="ayuda px" id="ayuda">ARRASTRA EL MAPA · PULSA UNA CHINCHETA</p>
 
   {/* ---------- panel ---------- */}
-  <aside class="panel" id="panel" aria-hidden="true" aria-label="Ficha del lugar">
+  <div class="hoja-velo" id="velo" aria-hidden="true"></div>
+  <aside class="panel hoja-inferior" id="panel" aria-hidden="true" aria-label="Ficha del lugar">
+    <button class="hoja-asa" type="button" aria-label="Arrastra hacia abajo para cerrar"></button>
     <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
     <div class="panel-cuerpo" id="panel-cuerpo">
       {LUGARES.map((l) => (
@@ -67,7 +69,8 @@ import { url } from '../../lib/rutas';
 </div>
 
 <style>
-  .mundo{ position:relative; height:100svh; overflow:hidden; background:#1A0F0A }
+  .mundo{ position:relative; height:calc(100svh - var(--barra)); overflow:hidden;
+    background:#1A0F0A; touch-action:none }
 
   .lienzo{
     position:absolute; left:0; top:0;
@@ -199,6 +202,9 @@ import { url } from '../../lib/rutas';
 </style>
 
 <script>
+  import { montarHoja } from '../../lib/hoja';
+  import { montarGestos, umbralArrastre } from '../../lib/gestos';
+
   const mundo = document.getElementById('mundo')!;
   const lienzo = document.getElementById('lienzo')!;
   const mapa = document.getElementById('mapa') as HTMLImageElement;
@@ -215,9 +221,13 @@ import { url } from '../../lib/rutas';
     lienzo.style.setProperty('--contra', String(1 / escala));
   }
 
+  // Escala a la que el mapa cabe entero. Sirve para que el doble toque sepa
+  // si toca acercar o volver a la vista completa.
+  let escalaAjuste = 1;
   function ajustar() {
     const c = mundo.getBoundingClientRect();
     escala = Math.min(c.width / ANCHO, (c.height - 56) / ALTO);
+    escalaAjuste = escala;
     x = (c.width - ANCHO * escala) / 2;
     y = (c.height - 56 - ALTO * escala) / 2;
     aplicar();
@@ -254,14 +264,20 @@ import { url } from '../../lib/rutas';
      Mismo criterio que en el panteón: no se captura el puntero hasta que el
      arrastre es real, o el clic nunca llega a la chincheta.               */
   let arrastrando = false, movido = false, px0 = 0, py0 = 0, ix = 0, iy = 0;
+  let umbral = 6, dedos = 0;
   lienzo.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') dedos++;
+    // Con dos dedos encima se está pellizcando, no arrastrando: si no se
+    // corta aquí, el mapa sale disparado mientras se acerca.
+    if (dedos > 1) { arrastrando = false; return; }
     arrastrando = true; movido = false;
+    umbral = umbralArrastre(e.pointerType);
     px0 = e.clientX; py0 = e.clientY; ix = x; iy = y;
   });
   lienzo.addEventListener('pointermove', (e) => {
-    if (!arrastrando) return;
+    if (!arrastrando || dedos > 1) return;
     const dx = e.clientX - px0, dy = e.clientY - py0;
-    if (!movido && Math.hypot(dx, dy) > 6) {
+    if (!movido && Math.hypot(dx, dy) > umbral) {
       movido = true;
       lienzo.classList.add('arrastrando');
       mundo.dataset.tocado = '';
@@ -271,7 +287,12 @@ import { url } from '../../lib/rutas';
     x = ix + dx; y = iy + dy;
     aplicar();
   });
+  const soltarDedo = (e: PointerEvent) => {
+    if (e.pointerType === 'touch') dedos = Math.max(0, dedos - 1);
+  };
+  addEventListener('pointercancel', soltarDedo);
   addEventListener('pointerup', (e) => {
+    soltarDedo(e);
     if (!arrastrando) return;
     arrastrando = false;
     lienzo.classList.remove('arrastrando');
@@ -322,6 +343,20 @@ import { url } from '../../lib/rutas';
     if (s) abrir(s, false); else cerrar(true);
   });
   document.getElementById('cerrar')!.addEventListener('click', () => cerrar());
+
+  /* ---------------------------------------------------------- gestos ----
+     Pellizco y doble toque. Sin esto, en el movil el mapa no se podia
+     acercar de ninguna forma: el zoom iba solo por rueda de raton.       */
+  montarGestos({
+    zona: mundo,
+    acercar: (factor, cx, cy) => zoom(factor, cx, cy),
+    ajustar,
+    estaAcercado: () => escala > escalaAjuste * 1.05,
+    hayAlgoEn: (x, y) => Boolean(document.elementFromPoint(x, y)?.closest('.chincheta')),
+  });
+
+  // Gesto de movil: bajar la hoja o tocar fuera la cierra.
+  montarHoja(panel, document.getElementById('velo'), () => cerrar());
   addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
 
   // índice, saltos entre fichas y navegación con teclado

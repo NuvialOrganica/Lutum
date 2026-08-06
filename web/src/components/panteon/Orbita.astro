@@ -81,7 +81,9 @@ const PORTALES = [
   <p class="ayuda px" id="ayuda">ARRASTRA LA RUEDA · PULSA UN DIOS</p>
 
   {/* ================= CAJÓN ================= */}
-  <aside class="cajon" id="cajon" aria-hidden="true" aria-label="Ficha de la deidad">
+  <div class="hoja-velo" id="velo" aria-hidden="true"></div>
+  <aside class="cajon hoja-inferior" id="cajon" aria-hidden="true" aria-label="Ficha de la deidad">
+    <button class="hoja-asa" type="button" aria-label="Arrastra hacia abajo para cerrar"></button>
     <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
     <div class="cajon-cuerpo" id="cajon-cuerpo">
       {DEIDADES.map((d) => (
@@ -92,7 +94,7 @@ const PORTALES = [
 </div>
 
 <style>
-  .panteon{ position:relative; height:100svh; overflow:hidden }
+  .panteon{ position:relative; height:calc(100svh - var(--barra)); overflow:hidden }
   .panteon :global(.fondo-estrellas){ z-index:0 }
 
   /* ---------- escena ---------- */
@@ -212,6 +214,10 @@ const PORTALES = [
 
   /* ---------- portales flotantes ---------- */
   .portales{ position:absolute; inset:0; z-index:5; pointer-events:none }
+  /* En el movil los tres llevan a secciones que ya estan en la barra de
+     abajo, y ademas caian encima de la rueda. La navegacion diegetica se
+     queda para la pantalla grande, que es donde hay sitio para jugar. */
+  @media (max-width:720px){ .portales{ display:none } }
   .portal{
     position:absolute; pointer-events:auto; text-align:center;
     animation:flotar 6.4s steps(16) infinite;
@@ -270,6 +276,9 @@ const PORTALES = [
 </style>
 
 <script>
+  import { montarHoja } from '../../lib/hoja';
+  import { umbralArrastre } from '../../lib/gestos';
+
   const panteon = document.getElementById('panteon')!;
   const rueda = document.getElementById('rueda')!;
   const cajon = document.getElementById('cajon')!;
@@ -322,18 +331,23 @@ const PORTALES = [
         sólo se captura cuando el arrastre ha empezado de verdad.
      2. Un umbral de 2 px cuenta como arrastre el temblor normal de la mano
         al hacer clic. Se sube a 6 px y se mide contra el punto de partida,
-        no contra el fotograma anterior.                                    */
-  const UMBRAL = 6;
+        no contra el fotograma anterior.
+     3. Con el dedo esos 6 px se quedan cortos: la yema tapa mucho más que un
+        puntero y casi nadie lo levanta donde lo puso, así que medio toque se
+        perdía como si fuera arrastre. El umbral lo decide el tipo de
+        puntero.                                                           */
+  let umbral = 6;
   let inicioX = 0, inicioY = 0, capturado = false;
 
   rueda.addEventListener('pointerdown', (e) => {
     arrastrando = true; movido = false; capturado = false;
+    umbral = umbralArrastre(e.pointerType);
     inicioX = ultimoX = e.clientX; inicioY = e.clientY;
   });
 
   rueda.addEventListener('pointermove', (e) => {
     if (!arrastrando) return;
-    if (!movido && Math.hypot(e.clientX - inicioX, e.clientY - inicioY) > UMBRAL) {
+    if (!movido && Math.hypot(e.clientX - inicioX, e.clientY - inicioY) > umbral) {
       movido = true;
       // ya es un arrastre: ahora sí conviene capturar, para no perder el
       // puntero si se sale de la rueda
@@ -405,6 +419,9 @@ const PORTALES = [
     }
   });
   document.getElementById('cerrar')?.addEventListener('click', () => cerrar());
+
+  // Gesto de movil: bajar la hoja o tocar fuera la cierra.
+  montarHoja(cajon, document.getElementById('velo'), () => cerrar());
   addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
 
   // saltar de un dios a otro desde los vínculos
