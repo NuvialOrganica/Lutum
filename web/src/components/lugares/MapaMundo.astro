@@ -1,0 +1,323 @@
+---
+import { LUGARES, CON_ENTRADA } from '../../data/lugares';
+import FichaLugar from './FichaLugar.astro';
+import { url } from '../../lib/rutas';
+---
+
+<div class="mundo" id="mundo">
+  {/* El mapa y sus chinchetas van juntos en la misma capa, así que al mover o
+      acercar se transforman a la vez y las marcas nunca se descuelgan. */}
+  <div class="lienzo" id="lienzo">
+    <img class="mapa" id="mapa" src={url('assets/mapa.jpg')}
+         width="1402" height="1122" alt="Mapa del mundo de Lutum" />
+    {LUGARES.map((l) => (
+      <button
+        class:list={['chincheta', { vacia: l.sinEntrada }]}
+        type="button" data-slug={l.slug}
+        style={`left:${l.x * 100}%; top:${l.y * 100}%`}
+        aria-label={`${l.nombre}. ${l.sub}`}
+      >
+        <span class="pincho" aria-hidden="true"></span>
+        <span class="rotulo px">{l.nombre}</span>
+      </button>
+    ))}
+  </div>
+
+  {/* ---------- barra ---------- */}
+  <div class="barra">
+    <p class="px cuenta">
+      <b>{CON_ENTRADA}</b> DE <b>{LUGARES.length}</b> CON ENTRADA
+    </p>
+    <div class="leyenda px">
+      <span><i></i>Con entrada</span>
+      <span><i class="v"></i>Sólo en el mapa</span>
+    </div>
+    <div class="lupas">
+      <button class="px" type="button" data-zoom="-">−</button>
+      <button class="px" type="button" data-zoom="0">AJUSTAR</button>
+      <button class="px" type="button" data-zoom="+">+</button>
+    </div>
+  </div>
+
+  {/* ---------- índice ---------- */}
+  <details class="indice">
+    <summary class="px">ÍNDICE · {LUGARES.length} LUGARES</summary>
+    <ul>
+      {LUGARES.map((l) => (
+        <li>
+          <button type="button" data-ir={l.slug} class:list={{ vacia: l.sinEntrada }}>
+            {l.nombre}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </details>
+
+  <p class="ayuda px" id="ayuda">ARRASTRA EL MAPA · PULSA UNA CHINCHETA</p>
+
+  {/* ---------- panel ---------- */}
+  <aside class="panel" id="panel" aria-hidden="true" aria-label="Ficha del lugar">
+    <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
+    <div class="panel-cuerpo" id="panel-cuerpo">
+      {LUGARES.map((l) => (
+        <div class="hoja" data-slug={l.slug} hidden><FichaLugar l={l} /></div>
+      ))}
+    </div>
+  </aside>
+</div>
+
+<style>
+  .mundo{ position:relative; height:100svh; overflow:hidden; background:#1A0F0A }
+
+  .lienzo{
+    position:absolute; left:0; top:0;
+    transform-origin:0 0;
+    cursor:grab; touch-action:none;
+  }
+  .lienzo.arrastrando{ cursor:grabbing }
+  .mapa{ display:block; image-rendering:auto; user-select:none; -webkit-user-drag:none }
+
+  /* ---------- chinchetas ---------- */
+  .chincheta{
+    position:absolute; z-index:3;
+    /* Se contra-escala para que la marca mida siempre lo mismo en pantalla,
+       por mucho que se acerque el mapa. */
+    transform:translate(-50%,-50%) scale(var(--contra, 1));
+    display:grid; place-items:center; padding:0;
+  }
+  .pincho{
+    display:block; width:16px; height:16px;
+    background:var(--c08);
+    box-shadow:0 0 0 4px var(--c00), 0 0 0 6px var(--c10);
+    clip-path:polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  /* Hueca pero visible: sobre pergamino claro, un aro oscuro sin relleno
+     desaparecía. Va rellena de tinta con el mismo aro claro que las demás,
+     así se distingue de un vistazo sin dejar de verse. */
+  .chincheta.vacia .pincho{
+    background:var(--c01);
+    box-shadow:0 0 0 4px var(--c00), 0 0 0 6px var(--c09);
+  }
+  .chincheta:hover .pincho,
+  .chincheta:focus-visible .pincho,
+  .chincheta[data-activa] .pincho{
+    background:var(--c13);
+    box-shadow:0 0 0 4px var(--c00), 0 0 0 6px var(--c11);
+  }
+  .rotulo{
+    position:absolute; top:calc(100% + 6px); left:50%; transform:translateX(-50%);
+    font-size:8px; letter-spacing:.08em; color:var(--c10); white-space:nowrap;
+    background:var(--c00); padding:4px 6px; box-shadow:0 0 0 2px var(--c05);
+    opacity:0; pointer-events:none; transition:opacity .1s steps(2);
+  }
+  .chincheta:hover .rotulo,
+  .chincheta:focus-visible .rotulo,
+  .chincheta[data-activa] .rotulo{ opacity:1 }
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:absolute; left:0; right:0; bottom:0; z-index:10;
+    display:flex; align-items:center; gap:var(--u6); flex-wrap:wrap;
+    /* el hueco de la derecha es para los interruptores CRT y RATÓN */
+    padding:var(--u3) 140px var(--u3) var(--u6);
+    background:rgba(10,4,16,.92); box-shadow:0 -2px 0 var(--c05);
+  }
+  .cuenta{ font-size:8px; letter-spacing:.14em; color:rgba(245,168,192,.7) }
+  .cuenta b{ color:var(--c13) }
+  .leyenda{ display:flex; gap:var(--u4); font-size:7px; letter-spacing:.1em;
+    color:rgba(245,168,192,.7) }
+  .leyenda span{ display:flex; align-items:center; gap:var(--u2) }
+  .leyenda i{ width:10px; height:10px; background:var(--c08);
+    clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%) }
+  .leyenda i.v{ background:var(--c01); box-shadow:0 0 0 2px var(--c09) }
+  .lupas{ margin-left:auto; display:flex; gap:var(--u) }
+  .lupas button{
+    font-size:8px; letter-spacing:.12em; color:var(--c09);
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03); transition:none;
+  }
+  .lupas button:hover{ color:var(--c00); background:var(--c13); box-shadow:0 0 0 2px var(--c10) }
+
+  /* ---------- índice ---------- */
+  .indice{ position:absolute; left:var(--u4); top:var(--u16); z-index:10;
+    max-width:260px; background:rgba(10,4,16,.95); box-shadow:0 0 0 2px var(--c05) }
+  .indice summary{ font-size:8px; letter-spacing:.14em; color:var(--c13);
+    padding:var(--u3) var(--u4); list-style:none }
+  .indice summary::-webkit-details-marker{ display:none }
+  .indice[open]{ max-height:64vh; overflow-y:auto }
+  .indice ul{ list-style:none; padding:0 var(--u4) var(--u4) }
+  .indice li{ border-top:2px solid var(--c02) }
+  .indice li button{ font-size:18px; color:var(--c10); text-align:left;
+    padding:var(--u) 0; width:100% }
+  .indice li button:hover{ color:var(--c08) }
+  .indice li button.vacia{ color:var(--c04) }
+  .indice li button.vacia::after{ content:' ·'; color:var(--c05) }
+
+  .ayuda{ position:absolute; left:50%; top:var(--u4); transform:translateX(-50%);
+    z-index:10; font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.6);
+    background:rgba(10,4,16,.8); padding:var(--u2) var(--u3);
+    transition:opacity .3s steps(3); pointer-events:none }
+  .mundo[data-tocado] .ayuda{ opacity:0 }
+
+  /* ---------- panel ---------- */
+  .panel{
+    position:absolute; top:0; right:0; bottom:0; z-index:20;
+    width:min(480px,100%); background:var(--c00);
+    box-shadow:-4px 0 0 var(--c05), -8px 0 0 var(--c00);
+    transform:translateX(101%); transition:transform .28s steps(7);
+    display:flex; flex-direction:column;
+  }
+  .mundo[data-abierto] .panel{ transform:none }
+  .cerrar{ position:absolute; top:var(--u4); right:var(--u4); z-index:2;
+    font-size:16px; color:var(--c09); line-height:1;
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03) }
+  .cerrar:hover{ color:var(--c00); background:var(--c06); box-shadow:0 0 0 2px var(--c10) }
+  .panel-cuerpo{ overflow-y:auto; padding:var(--u12) var(--u6) var(--u16);
+    flex:1; overscroll-behavior:contain }
+
+  @media (max-width:720px){
+    .indice{ display:none }
+    .leyenda{ display:none }
+    .panel-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
+  }
+</style>
+
+<script>
+  const mundo = document.getElementById('mundo')!;
+  const lienzo = document.getElementById('lienzo')!;
+  const mapa = document.getElementById('mapa') as HTMLImageElement;
+  const panel = document.getElementById('panel')!;
+  const hojas = Array.from(panel.querySelectorAll<HTMLElement>('.hoja'));
+  const chinchetas = Array.from(lienzo.querySelectorAll<HTMLElement>('.chincheta'));
+
+  const ANCHO = 1402, ALTO = 1122;
+  let escala = 1, x = 0, y = 0;
+
+  function aplicar() {
+    lienzo.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) scale(${escala})`;
+    // Las chinchetas se contra-escalan para no crecer con el mapa.
+    lienzo.style.setProperty('--contra', String(1 / escala));
+  }
+
+  function ajustar() {
+    const c = mundo.getBoundingClientRect();
+    escala = Math.min(c.width / ANCHO, (c.height - 56) / ALTO);
+    x = (c.width - ANCHO * escala) / 2;
+    y = (c.height - 56 - ALTO * escala) / 2;
+    aplicar();
+  }
+  if (mapa.complete) ajustar(); else mapa.addEventListener('load', ajustar);
+  addEventListener('resize', ajustar);
+
+  function zoom(factor: number, cx?: number, cy?: number) {
+    const c = mundo.getBoundingClientRect();
+    const px = cx ?? c.width / 2, py = cy ?? c.height / 2;
+    const nueva = Math.min(4, Math.max(0.2, escala * factor));
+    // se acerca hacia el punto señalado, no hacia la esquina
+    x = px - (px - x) * (nueva / escala);
+    y = py - (py - y) * (nueva / escala);
+    escala = nueva;
+    aplicar();
+    mundo.dataset.tocado = '';
+  }
+
+  mundo.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const c = mundo.getBoundingClientRect();
+    zoom(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - c.left, e.clientY - c.top);
+  }, { passive: false });
+
+  for (const b of Array.from(document.querySelectorAll<HTMLElement>('[data-zoom]'))) {
+    b.addEventListener('click', () => {
+      if (b.dataset.zoom === '0') { ajustar(); return; }
+      zoom(b.dataset.zoom === '+' ? 1.35 : 1 / 1.35);
+    });
+  }
+
+  /* --------------------------------------------------------- arrastre ----
+     Mismo criterio que en el panteón: no se captura el puntero hasta que el
+     arrastre es real, o el clic nunca llega a la chincheta.               */
+  let arrastrando = false, movido = false, px0 = 0, py0 = 0, ix = 0, iy = 0;
+  lienzo.addEventListener('pointerdown', (e) => {
+    arrastrando = true; movido = false;
+    px0 = e.clientX; py0 = e.clientY; ix = x; iy = y;
+  });
+  lienzo.addEventListener('pointermove', (e) => {
+    if (!arrastrando) return;
+    const dx = e.clientX - px0, dy = e.clientY - py0;
+    if (!movido && Math.hypot(dx, dy) > 6) {
+      movido = true;
+      lienzo.classList.add('arrastrando');
+      mundo.dataset.tocado = '';
+      try { lienzo.setPointerCapture(e.pointerId); } catch { /* da igual */ }
+    }
+    if (!movido) return;
+    x = ix + dx; y = iy + dy;
+    aplicar();
+  });
+  addEventListener('pointerup', (e) => {
+    if (!arrastrando) return;
+    arrastrando = false;
+    lienzo.classList.remove('arrastrando');
+    if (movido) return;
+    const bajo = document.elementFromPoint(e.clientX, e.clientY);
+    const ch = bajo?.closest<HTMLElement>('.chincheta');
+    if (ch?.dataset.slug) abrir(ch.dataset.slug);
+  });
+
+  /* ----------------------------------------------------------- panel ---- */
+  function abrir(slug: string, empujar = true) {
+    const hoja = hojas.find((h) => h.dataset.slug === slug);
+    if (!hoja) return;
+    hojas.forEach((h) => { h.hidden = h !== hoja; });
+    chinchetas.forEach((c) => {
+      if (c.dataset.slug === slug) c.dataset.activa = ''; else delete c.dataset.activa;
+    });
+    mundo.dataset.abierto = '';
+    mundo.dataset.tocado = '';
+    panel.setAttribute('aria-hidden', 'false');
+    document.getElementById('panel-cuerpo')!.scrollTop = 0;
+    centrar(slug);
+    if (empujar) {
+      if (location.hash) history.replaceState(null, '', `#${slug}`);
+      else history.pushState(null, '', `#${slug}`);
+    }
+  }
+
+  /** Lleva la chincheta a la mitad libre, la de la izquierda. */
+  function centrar(slug: string) {
+    const ch = chinchetas.find((c) => c.dataset.slug === slug);
+    if (!ch) return;
+    const c = mundo.getBoundingClientRect();
+    const libre = c.width > 900 ? (c.width - 480) / 2 : c.width / 2;
+    x = libre - (parseFloat(ch.style.left) / 100) * ANCHO * escala;
+    y = (c.height - 56) / 2 - (parseFloat(ch.style.top) / 100) * ALTO * escala;
+    aplicar();
+  }
+
+  function cerrar(volviendo = false) {
+    delete mundo.dataset.abierto;
+    panel.setAttribute('aria-hidden', 'true');
+    chinchetas.forEach((c) => delete c.dataset.activa);
+    if (!volviendo && location.hash) history.back();
+  }
+  addEventListener('popstate', () => {
+    const s = location.hash.slice(1);
+    if (s) abrir(s, false); else cerrar(true);
+  });
+  document.getElementById('cerrar')!.addEventListener('click', () => cerrar());
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
+
+  // índice, saltos entre fichas y navegación con teclado
+  mundo.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ir]');
+    if (b?.dataset.ir) abrir(b.dataset.ir);
+  });
+  for (const ch of chinchetas) {
+    ch.addEventListener('click', (e) => {
+      if (!(e as MouseEvent).detail) abrir(ch.dataset.slug!);   // teclado
+    });
+  }
+
+  const inicial = location.hash.slice(1);
+  if (inicial) setTimeout(() => abrir(inicial, false), 60);
+</script>

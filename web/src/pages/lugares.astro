@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import EnObras from '../components/EnObras.astro';
+import Volver from '../components/Volver.astro';
+import MapaMundo from '../components/lugares/MapaMundo.astro';
 ---
-<Base titulo="Los Lugares" fija>
-  <EnObras
-    seccion="ARCHIVO · GEOGRAFÍA"
-    que="LOS LUGARES"
-    fase="FASE 6 · PENDIENTE"
-  />
+<Base
+  titulo="Los Lugares"
+  descripcion="El mapa de Lutum: veintisiete lugares, trece con entrada en el vault y catorce todavía por escribir."
+  fija
+>
+  <Volver texto="LUTUM" />
+  <MapaMundo />
 </Base>

@@ -114,12 +114,21 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 7 · FASE 6 — Lugares `/lugares` *(si D1 = sí)*
 
-- [ ] Mapa de tiles explorable con personaje
-- [ ] 12 lugares con su estructura pixel
-- [ ] Diálogo RPG con pestañas
-- [ ] Diario de descubrimientos + minimapa
-- [ ] Controles táctiles para móvil (cruceta en pantalla)
-- [ ] Enlace de cada lugar a su ficha larga
+> **Cambio de rumbo:** iba a ser un mapa de tiles inventado con un personaje que
+> camina. Cristina pasó el **mapa canónico del mundo**, así que se descarta la
+> geografía inventada: manda el mapa real. Se pixeliza y se le clavan chinchetas.
+
+- [x] Mapa canónico pixelizado (`mapa.jpg`, 385 KB) y servido a tamaño completo
+- [x] Lienzo arrastrable y con zoom; las chinchetas se contra-escalan para medir
+      siempre lo mismo en pantalla
+- [x] **27 lugares** con sus coordenadas verificadas una a una sobre el mapa
+- [x] 13 con ficha completa del vault; los otros 14 salen igual, marcados
+      «sólo en el mapa» ← los huecos se publican a propósito
+- [x] Panel lateral con la ficha, rótulo al pasar por encima y aviso de pendiente
+- [x] Índice de los 27, leyenda, contador y botones de zoom
+- [x] Enlace profundo (`/lugares/#neblisco`), botón de volver e historial
+- [ ] Páginas sueltas `/lugar/[slug]` *(el panel ya cubre el caso; queda para
+      cuando haya fichas largas de verdad)*
 
 ## 8 · FASE 7 — Assets
 

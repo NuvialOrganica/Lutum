@@ -1,0 +1,82 @@
+---
+import type { Lugar } from '../../data/lugares';
+import { porSlug as deidadPorSlug } from '../../data/deidades';
+import SpritePx from '../SpritePx.astro';
+import { pagina } from '../../lib/rutas';
+
+interface Props { l: Lugar }
+const { l } = Astro.props;
+const dios = l.deidad ? deidadPorSlug(l.deidad) : undefined;
+---
+
+<article class="ficha">
+  <p class="px tipo">{l.sinEntrada ? 'SÓLO EN EL MAPA' : 'LUGAR'}</p>
+  <h2 class="px nombre">{l.nombre}</h2>
+  <p class="sub">{l.sub}</p>
+
+  {l.sinEntrada && (
+    <p class="px aviso">SIN ENTRADA EN EL VAULT · SE PUBLICA A PROPÓSITO</p>
+  )}
+
+  <div class="paginas">
+    {l.paginas.map(([clave, texto]) => (
+      <section class="pagina marco">
+        <span class="etiqueta">{clave}</span>
+        <p set:html={texto} />
+      </section>
+    ))}
+  </div>
+
+  {l.nota && (
+    <div class="nota marco">
+      <span class="etiqueta">OJO</span>
+      <p>{l.nota}</p>
+    </div>
+  )}
+
+  {dios && (
+    <div class="dios">
+      <p class="px lbl">TEMPLO DE</p>
+      <a class="enlace" href={pagina(`deidad/${dios.slug}`)}>
+        <SpritePx nombre={dios.slug} paleta={dios.paleta} tam={48} />
+        <span>
+          <b class="px">{dios.nombre}</b>
+          <i>{dios.titulo}</i>
+        </span>
+      </a>
+    </div>
+  )}
+</article>
+
+<style>
+  .tipo{ font-size:8px; letter-spacing:.3em; color:var(--c08); margin-bottom:var(--u3) }
+  .nombre{ font-size:18px; color:var(--c10); line-height:1.32;
+    text-shadow:var(--u) var(--u) 0 var(--c05) }
+  .sub{ font-size:21px; color:var(--c09); margin-top:var(--u3) }
+  .aviso{
+    margin-top:var(--u4); font-size:7px; letter-spacing:.1em; line-height:1.6;
+    color:var(--c00); background:var(--c13);
+    padding:var(--u2) var(--u3); display:inline-block;
+  }
+
+  .paginas{ margin-top:var(--u8); display:grid; gap:var(--u8) }
+  .pagina{ padding:var(--u6) var(--u4) var(--u4) }
+  .pagina p{ font-size:21px; line-height:1.32; color:var(--c09) }
+  .pagina :global(b){ color:var(--c10) }
+  .pagina :global(i){ color:var(--c13); font-style:normal }
+
+  .nota{ margin-top:var(--u8); padding:var(--u6) var(--u4) var(--u4) }
+  .nota > .etiqueta{ background:var(--c06) }
+  .nota p{ font-size:19px; line-height:1.3; color:var(--c13) }
+
+  .dios{ margin-top:var(--u8) }
+  .lbl{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.65); margin-bottom:var(--u3) }
+  .enlace{
+    display:flex; align-items:center; gap:var(--u4);
+    padding:var(--u3); box-shadow:0 0 0 2px var(--c03); color:inherit; transition:none;
+  }
+  .enlace:hover{ box-shadow:0 0 0 2px var(--c08); background:var(--c02) }
+  .enlace b{ display:block; font-size:10px; color:var(--c10) }
+  .enlace i{ display:block; font-style:normal; font-size:18px;
+    color:var(--c09); margin-top:var(--u) }
+</style>

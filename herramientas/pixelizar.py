@@ -305,6 +305,24 @@ def generar_cursores(dir_out: Path) -> list[str]:
     return hechos
 
 
+def procesar_mapa(dir_in: Path, dir_out: Path) -> str | None:
+    """El mapa del mundo va aparte.
+
+    Es una ilustración con textura de pergamino, no un sprite: cuantizarlo a
+    paleta indexada lo deja en 914 KB, el triple que un JPEG de calidad 78, y
+    encima con peor aspecto. Aquí sólo se recomprime.
+    """
+    origen = dir_in / "mapa.jpeg"
+    if not origen.is_file():
+        return None
+    im = Image.open(origen).convert("RGB")
+    destino = dir_out / "mapa.jpg"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    im.save(destino, quality=78, optimize=True, progressive=True)
+    antes, despues = origen.stat().st_size, destino.stat().st_size
+    return f"mapa.jpg  {im.width}x{im.height}  {antes//1024} KB -> {despues//1024} KB"
+
+
 def kb(n: int) -> str:
     return f"{n/1024:.0f} KB" if n < 1024 * 1024 else f"{n/1048576:.1f} MB"
 
@@ -395,6 +413,12 @@ def main() -> int:
             total_antes += r["antes"]; total_despues += r["despues"]; hechos += 1
             print(f"  ✓ {salida_nombre:22s} {r['res']:>9s}  {r['colores']:>3d} col  "
                   f"{kb(r['antes']):>8s} -> {kb(r['despues']):>8s}  (-{r['ahorro']}%)")
+
+    if not args.listar and not args.solo:
+        linea = procesar_mapa(dir_in, dir_out)
+        if linea:
+            print("\n\033[95mMAPA DEL MUNDO\033[0m")
+            print(f"  ✓ {linea}")
 
     if args.revisar and not args.listar:
         print()
