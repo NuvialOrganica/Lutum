@@ -35,18 +35,26 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ---
 
-## 1 · FASE 0 — Datos (lo primero, todo lo demás depende de esto)
+## 1 · FASE 0 — Datos
 
-- [ ] Crear repo `lutum` y el proyecto Astro base (`npm create astro@latest`)
-- [ ] Copiar las 36 notas del vault a `src/content/`
-- [ ] Añadir frontmatter YAML a las **13 deidades** (hoy los datos están en negritas dentro del texto)
-- [ ] Añadir frontmatter YAML a los **11 lugares**
-- [ ] Añadir frontmatter YAML a los **11 hechos históricos**
-- [ ] Normalizar nombres duplicados: `Zarath`/`Zaarath`, `Arténica`/`Cladípolis`
-- [ ] Convertir los `[[enlaces]]` de Obsidian en referencias tipadas
-- [ ] Marcar como `estado: pendiente` las 4 entradas vacías (año 372, Verdantia, San Roque, Los Alcantarillados) — **se publican, no se ocultan**
-- [ ] Escribir `src/content/config.ts` con los esquemas Zod
-- [ ] Añadir los campos nuevos que no existen en el vault: `stats` (poder/caos/culto/huella), `iconos`, `ilustracion`, `orden`
+> **Se hizo de otra manera.** El vault acabó volcado a módulos TypeScript
+> tipados (`src/data/*.ts`) en vez de a colecciones de contenido con Zod. Para
+> construir da igual y fue más rápido, pero **queda una decisión abierta**: si
+> Cristina va a editar el lore ella misma, editar `.md` con frontmatter es muy
+> distinto de editar `.ts`. Ver «Decisión pendiente» al final.
+
+- [x] Repo y proyecto Astro base
+- [x] Las 36 notas del vault volcadas a `src/data/` (deidades, códice, crónica, lugares)
+- [x] Datos estructurados de las 13 deidades — hoy tipados en TS, no en frontmatter
+- [x] Los lugares, ampliados de 11 a **27** con el mapa canónico
+- [x] Los 11 hechos históricos, con color de cielo y suelo por era
+- [x] `Zarath`/`Zaarath` unificado (en los datos ya sólo existe `zarath`)
+- [x] Los `[[enlaces]]` de Obsidian, convertidos en referencias tipadas (`vinculos`)
+- [x] Las entradas vacías se marcan y **se publican**, no se ocultan
+- [x] Campos nuevos que no existen en el vault: `stats`, `iconos`, `ilustracion`, `orden`
+- [ ] `Arténica`/`Cladípolis` y `Estiaria`/`Estelaria` — **esperando a Cristina**,
+      son incoherencias reales del lore, no erratas que pueda decidir yo
+- [ ] *(opcional)* Pasar a colecciones de contenido si el lore lo va a editar ella
 
 ## 2 · FASE 1 — Sistema de diseño pixel
 
@@ -139,7 +147,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 - [x] **Tanda 2 · objetos-portal**: martillo, telescopio, pergamino y reloj ✓ los cuatro recibidos y procesados
 - [x] **Tanda 3 · 11 cuadros de suceso histórico** ✓ recibidos y procesados
 - [x] **Tanda 4 · extras**: cursor, favicon y 2 nebulosas ✓ recibidos y procesados
-- [ ] Iconos de origen (sentimiento/objeto/parte) — **los dibujo yo**, no hacen falta de ChatGPT
+- [x] Iconos de origen (sentimiento/objeto/parte) — dibujados a mano en `sprites.ts`, 16 rejillas de 16x16
 - [ ] Recuperar las 4 `Pasted image ...png` que el vault referencia y no están
 - [x] Pipeline `herramientas/pixelizar.py` escrito y verificado: **41,6 MB → 543 KB (-99 %)**
 - [ ] Atlas de iconos (cuando existan los iconos)
@@ -147,7 +155,9 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 ## 9 · FASE 8 — Astro y despliegue
 
 - [x] `astro.config.mjs` con `site` y `base` correctos (verificado: todas las rutas del build llevan `/Lutum/`)
-- [ ] Rutas dinámicas `/deidad/[slug]`, `/lugar/[slug]`, `/historia/[anio]`
+- [x] Ruta dinámica `/deidad/[slug]` (13 fichas)
+- [ ] `/lugar/[slug]` y `/historia/[anio]` — el panel lateral ya cubre ambos casos;
+      sólo valen la pena cuando haya fichas largas que enlazar desde fuera
 - [x] Workflow de GitHub Actions con `withastro/action` — **el job de construir ya pasa en verde**
 - [ ] ⚠️ **BLOQUEADO — lo tiene que hacer Cristina:** *Settings → Pages → Source = «GitHub Actions»*. Yo soy colaborador, no admin, y por API da 404. El job de desplegar se queda en cola hasta que lo active
 - [x] Todas las rutas pasan por `src/lib/rutas.ts` (`url()` y `pagina()`)
@@ -166,7 +176,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
       del códice se metía debajo del botón de volver
 - [ ] Sonido opcional (blips de menú), con interruptor y apagado por defecto
 - [ ] Kintsugi en el bloque «la humanidad está restaurada» (si D4 = sí)
-- [ ] Estados vacíos bonitos para las 4 entradas pendientes
+- [x] Estados vacíos bonitos para las entradas pendientes (códice, crónica, panteón y lugares)
 - [ ] Revisión de contraste y tamaños de texto (las fuentes pixel cansan a tamaño pequeño)
 - [ ] Prueba en Chrome, Firefox y móvil real
 - [ ] Lighthouse ≥ 95 en rendimiento
