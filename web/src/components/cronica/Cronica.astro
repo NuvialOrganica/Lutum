@@ -1,0 +1,353 @@
+---
+import { ESCENAS } from '../../data/cronica';
+import { url } from '../../lib/rutas';
+---
+
+<div class="cronica" id="cronica">
+  <canvas id="paisaje"></canvas>
+
+  {/* Los cuadros flotantes: uno por fecha, sin tapar la escena. */}
+  <div class="cuadros" id="cuadros">
+    {ESCENAS.map((e, i) => (
+      <figure class="cuadro" data-i={i}>
+        <div class="lienzo">
+          <img src={url(`assets/historia/${e.cuadro}.png`)}
+               width="192" height="144" alt={`${e.titulo}, año ${e.anio}`}
+               loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+        </div>
+        <figcaption class="px placa">AÑO {e.anio}</figcaption>
+      </figure>
+    ))}
+  </div>
+
+  {/* Panel de texto, siempre el de la escena en la que estás. */}
+  <article class="panel marco" id="panel">
+    <span class="etiqueta" id="p-anio">AÑO 0</span>
+    <h2 class="px" id="p-titulo"></h2>
+    <div id="p-texto"></div>
+    <div class="etiquetas" id="p-etiquetas"></div>
+    <p class="px pendiente" id="p-pendiente" hidden>ENTRADA VACÍA EN EL VAULT · SE PUBLICA A PROPÓSITO</p>
+  </article>
+
+  {/* Línea de tiempo */}
+  <nav class="linea" aria-label="Cronología">
+    <div class="riel"><div class="avance" id="avance"></div></div>
+    <div class="marcas" id="marcas">
+      {ESCENAS.map((e, i) => (
+        <button class="marca px" type="button" data-i={i}
+                style={`left:${(i / (ESCENAS.length - 1)) * 100}%`}>
+          <i></i><b>{e.anio}</b>
+        </button>
+      ))}
+    </div>
+  </nav>
+
+  <p class="ayuda px" id="ayuda">RUEDA O FLECHAS PARA AVANZAR</p>
+
+  {/* Sin JavaScript la cronología se lee igual, en vertical. */}
+  <noscript>
+    <div class="sinjs">
+      {ESCENAS.map((e) => (
+        <section>
+          <h2>Año {e.anio} · {e.titulo}</h2>
+          <img src={url(`assets/historia/${e.cuadro}.png`)} width="192" height="144" alt="" />
+          {e.texto.map((t) => <p set:html={t} />)}
+        </section>
+      ))}
+    </div>
+  </noscript>
+</div>
+
+<script is:inline set:html={`window.__CRONICA__ = ${JSON.stringify(
+  ESCENAS.map((e) => ({
+    anio: e.anio, titulo: e.titulo, cielo: e.cielo, suelo: e.suelo,
+    texto: e.texto, etiquetas: e.etiquetas, pendiente: Boolean(e.pendiente),
+  })),
+)};`} />
+
+<style>
+  .cronica{ position:relative; height:100svh; overflow:hidden; background:var(--c00);
+    touch-action:none }
+  #paisaje{ position:absolute; inset:0; width:100%; height:100%;
+    display:block; image-rendering:pixelated; z-index:1; cursor:grab }
+  #paisaje.arrastrando{ cursor:grabbing }
+
+  /* ---------- cuadros ---------- */
+  .cuadros{ position:absolute; inset:0; z-index:3; pointer-events:none }
+  .cuadro{
+    position:absolute; left:0; top:0; margin:0;
+    will-change:transform;
+  }
+  .lienzo{
+    background:var(--c01); padding:var(--u2);
+    box-shadow:0 0 0 var(--u) var(--c10), 0 0 0 calc(var(--u) * 2) var(--c00),
+               var(--u3) var(--u3) 0 rgba(0,0,0,.55);
+  }
+  .cuadro img{ width:384px; height:288px; display:block }
+  .placa{
+    display:block; width:max-content; margin:var(--u4) auto 0;
+    font-size:8px; letter-spacing:.2em; color:var(--c00); background:var(--c13);
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c00);
+  }
+  @media (max-width:900px){ .cuadro img{ width:192px; height:144px } }
+
+  /* ---------- panel ---------- */
+  .panel{
+    position:absolute; left:var(--u6); bottom:var(--u16); z-index:6;
+    width:min(420px, calc(100% - var(--u12)));
+    padding:var(--u6) var(--u5, 20px) var(--u5, 20px);
+    background:rgba(10,4,16,.92);
+  }
+  .panel h2{ font-size:14px; color:var(--c10); line-height:1.5;
+    text-shadow:var(--u) var(--u) 0 var(--c05); margin-bottom:var(--u4) }
+  .panel :global(p){ font-size:20px; line-height:1.3; color:var(--c09) }
+  .panel :global(p + p){ margin-top:var(--u3) }
+  .panel :global(b){ color:var(--c10) }
+  .panel :global(i){ color:var(--c13); font-style:normal }
+  .etiquetas{ display:flex; flex-wrap:wrap; gap:var(--u2); margin-top:var(--u4) }
+  .etiquetas :global(span){
+    font-family:'PxTitulo',monospace; font-size:7px; letter-spacing:.12em;
+    color:var(--c09); padding:var(--u2) var(--u2);
+    box-shadow:0 0 0 2px var(--c05);
+  }
+  .pendiente{
+    margin-top:var(--u4); font-size:7px; letter-spacing:.1em;
+    color:var(--c00); background:var(--c13);
+    padding:var(--u2) var(--u3); display:inline-block;
+  }
+
+  /* ---------- línea de tiempo ---------- */
+  .linea{ position:absolute; left:0; right:0; bottom:0; z-index:8;
+    height:76px; padding:var(--u6) var(--u8) 0;
+    background:linear-gradient(180deg, transparent, rgba(10,4,16,.9) 45%) }
+  .riel{ position:relative; height:4px; background:var(--c03); margin:0 var(--u2) }
+  .avance{ position:absolute; left:0; top:0; height:4px; background:var(--c08) }
+  .marcas{ position:relative; height:0 }
+  .marca{
+    position:absolute; top:-14px; transform:translateX(-50%);
+    text-align:center; transition:none;
+  }
+  .marca i{ display:block; width:8px; height:8px; background:var(--c05);
+    margin:0 auto var(--u2); box-shadow:0 0 0 2px var(--c00) }
+  .marca b{ font-size:7px; letter-spacing:.06em; color:rgba(245,168,192,.7); font-weight:400 }
+  .marca:hover i, .marca[data-activa] i{ background:var(--c13); transform:scale(1.5) }
+  .marca:hover b, .marca[data-activa] b{ color:var(--c10) }
+
+  .ayuda{ position:absolute; right:var(--u6); top:var(--u4); z-index:8;
+    font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.5);
+    transition:opacity .3s steps(3); pointer-events:none }
+  .cronica[data-avanzado] .ayuda{ opacity:0 }
+
+  .sinjs{ position:relative; z-index:9; height:100svh; overflow-y:auto;
+    padding:var(--u8); background:var(--c00) }
+  .sinjs section{ max-width:60ch; margin:0 auto var(--u12) }
+  .sinjs h2{ font-size:12px; color:var(--c10); margin-bottom:var(--u4) }
+  .sinjs img{ width:384px; max-width:100%; margin-bottom:var(--u4) }
+  .sinjs p{ font-size:20px; color:var(--c09); margin-bottom:var(--u3) }
+
+  @media (max-width:900px){
+    .panel{ left:var(--u4); right:var(--u4); bottom:80px; width:auto;
+      max-height:40vh; overflow-y:auto }
+  }
+</style>
+
+<script>
+  type Esc = {
+    anio: string; titulo: string; cielo: [string, string]; suelo: [string, string];
+    texto: string[]; etiquetas: string[]; pendiente: boolean;
+  };
+  const ESC = (window as any).__CRONICA__ as Esc[];
+
+  const ESCALA = 3;            // 1 px de arte = 3 px de pantalla
+  const ANCHO_ESCENA = 1400;   // px de recorrido por era
+  const SUELO = 0.74;          // dónde cae el horizonte, en tanto por uno
+
+  const cv = document.getElementById('paisaje') as HTMLCanvasElement;
+  const ctx = cv.getContext('2d')!;
+  const cronica = document.getElementById('cronica')!;
+  const cuadros = Array.from(document.querySelectorAll<HTMLElement>('.cuadro'));
+  const marcas = Array.from(document.querySelectorAll<HTMLElement>('.marca'));
+
+  let ancho = 0, alto = 0, horizonte = 0;
+  let x = 0, destino = 0, actual = -1;
+  const TOPE = ANCHO_ESCENA * (ESC.length - 1);
+
+  function medir() {
+    const c = cv.getBoundingClientRect();
+    ancho = Math.max(64, Math.ceil(c.width / ESCALA));
+    alto = Math.max(64, Math.ceil(c.height / ESCALA));
+    horizonte = Math.round(alto * SUELO);
+    cv.width = ancho; cv.height = alto;
+    ctx.imageSmoothingEnabled = false;
+  }
+
+  /* ---------------------------------------------------------------- color
+     Se trabaja siempre con tripletas y sólo se pasa a texto al pintar: hacer
+     ida y vuelta a hexadecimal en cada banda del cielo era pedirle al
+     navegador un trabajo tonto sesenta veces por fotograma. */
+  type RGB = [number, number, number];
+  const hex = (c: string): RGB =>
+    [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+  const mezcla = (a: RGB, b: RGB, t: number): RGB =>
+    [Math.round(a[0] + (b[0] - a[0]) * t),
+     Math.round(a[1] + (b[1] - a[1]) * t),
+     Math.round(a[2] + (b[2] - a[2]) * t)];
+  const css = (c: RGB) => `rgb(${c[0]},${c[1]},${c[2]})`;
+
+  /** Ruido estable: la misma montaña siempre en el mismo sitio. */
+  function h(a: number, b: number): number {
+    let n = (a * 374761393 + b * 668265263) >>> 0;
+    n = ((n ^ (n >> 13)) * 1274126177) >>> 0;
+    return ((n ^ (n >> 16)) >>> 0) / 4294967296;
+  }
+
+  /* ---------------------------------------------------------------- pintar */
+  function pintar() {
+    const p = x / ANCHO_ESCENA;
+    const i0 = Math.max(0, Math.min(ESC.length - 1, Math.floor(p)));
+    const i1 = Math.min(ESC.length - 1, i0 + 1);
+    const t = Math.min(1, Math.max(0, p - i0));
+
+    // cielo: en bandas de 4 px de arte, no en degradado continuo, que en
+    // pixel art se ve como suciedad
+    const arriba = mezcla(hex(ESC[i0]!.cielo[0]), hex(ESC[i1]!.cielo[0]), t);
+    const abajo = mezcla(hex(ESC[i0]!.cielo[1]), hex(ESC[i1]!.cielo[1]), t);
+    const bandas = Math.ceil(horizonte / 4);
+    for (let b = 0; b < bandas; b++) {
+      ctx.fillStyle = css(mezcla(arriba, abajo, b / bandas));
+      ctx.fillRect(0, b * 4, ancho, 4);
+    }
+
+    // estrellas, sólo cuando el cielo está oscuro
+    const oscuridad = 1 - (hex(ESC[i0]!.cielo[0])[0] + 40) / 255;
+    if (oscuridad > 0.5) {
+      ctx.fillStyle = '#F7E3B0';
+      for (let k = 0; k < 90; k++) {
+        const ex = Math.round((k * 137 - x * 0.06) % (ancho + 40)) - 20;
+        if (ex < 0 || ex > ancho) continue;
+        ctx.globalAlpha = Math.min(1, (oscuridad - 0.5) * 3);
+        ctx.fillRect(ex, Math.round(h(k, 7) * horizonte * 0.7), 1, 1);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // montañas lejanas
+    ctx.fillStyle = css(mezcla(hex(ESC[i0]!.suelo[0]), hex(ESC[i1]!.suelo[0]), t));
+    const paso = 34;
+    for (let k = -1; k < ancho / paso + 2; k++) {
+      const idx = Math.floor(x * 0.12 / paso) + k;
+      const bx = Math.round(idx * paso - (x * 0.12));
+      const altura = 14 + Math.round(h(idx, 3) * 34);
+      const anchoM = Math.round(paso * (0.6 + h(idx, 5) * 0.9));
+      const sesgo = h(idx, 9) * 0.5 + 0.25;      // la cumbre, descentrada
+      for (let c = 0; c < anchoM; c++) {
+        const f = c / anchoM;
+        // perfil en pico, no en loma: dos rectas en vez de una parábola
+        const hh = Math.round(altura * (f < sesgo ? f / sesgo : (1 - f) / (1 - sesgo)));
+        ctx.fillRect(bx + c, horizonte - hh, 1, hh + 4);
+      }
+    }
+    ctx.fillStyle = 'rgba(10,4,16,.25)';
+    ctx.fillRect(0, horizonte - 2, ancho, 2);
+
+    // suelo
+    ctx.fillStyle = css(mezcla(hex(ESC[i0]!.suelo[1]), hex(ESC[i1]!.suelo[1]), t));
+    ctx.fillRect(0, horizonte, ancho, alto - horizonte);
+    ctx.fillStyle = 'rgba(255,255,255,.10)';
+    ctx.fillRect(0, horizonte, ancho, 1);
+    // guijarros, que dan la sensación de velocidad
+    ctx.fillStyle = 'rgba(10,4,16,.28)';
+    for (let k = 0; k < 130; k++) {
+      const gx = Math.round((k * 53 - x * 0.9) % (ancho + 60)) - 30;
+      if (gx < -4 || gx > ancho) continue;
+      ctx.fillRect(gx, horizonte + 4 + Math.round(h(k, 11) * (alto - horizonte - 6)), 3, 2);
+    }
+
+    colocarCuadros();
+    if (i0 !== actual) { actual = i0; texto(i0); }
+
+    const avance = Math.min(1, x / TOPE);
+    (document.getElementById('avance') as HTMLElement).style.width = `${avance * 100}%`;
+    marcas.forEach((m, k) => {
+      if (k === Math.round(p)) m.dataset.activa = ''; else delete m.dataset.activa;
+    });
+    cronica.toggleAttribute('data-avanzado', x > 200);
+  }
+
+  /** Los cuadros van en el DOM: así la ilustración sale nítida y enmarcada. */
+  function colocarCuadros() {
+    const anchoReal = ancho * ESCALA;
+    const altoReal = alto * ESCALA;
+    cuadros.forEach((c, i) => {
+      // el cuadro va un poco más lento que el suelo: flota por delante del
+      // paisaje pero por detrás del recorrido
+      const cx = i * ANCHO_ESCENA - x * 0.82 + anchoReal / 2 - 220;
+      if (cx < -520 || cx > anchoReal + 120) { c.style.visibility = 'hidden'; return; }
+      c.style.visibility = 'visible';
+      const flote = Math.round(Math.sin((x / 260) + i) * 6 / 2) * 2;
+      c.style.transform =
+        `translate(${Math.round(cx / 2) * 2}px, ${Math.round(altoReal * 0.16) + flote}px)`;
+    });
+  }
+
+  function texto(i: number) {
+    const e = ESC[i]!;
+    document.getElementById('p-anio')!.textContent = `AÑO ${e.anio}`;
+    document.getElementById('p-titulo')!.textContent = e.titulo;
+    document.getElementById('p-texto')!.innerHTML = e.texto.map((t) => `<p>${t}</p>`).join('');
+    document.getElementById('p-etiquetas')!.innerHTML =
+      e.etiquetas.map((t) => `<span>${t}</span>`).join('');
+    (document.getElementById('p-pendiente') as HTMLElement).hidden = !e.pendiente;
+  }
+
+  /* ------------------------------------------------------------- avanzar */
+  function irA(v: number) { destino = Math.max(0, Math.min(TOPE, v)); }
+
+  let animando = false;
+  function suavizar() {
+    const d = destino - x;
+    if (Math.abs(d) < 1) { x = destino; pintar(); animando = false; return; }
+    // Avance por pasos, a 24 fps y con setTimeout a secas. Con
+    // requestAnimationFrame el recorrido se queda a medias en cuanto la
+    // pestaña deja de componer fotogramas, y el viaje por la historia se
+    // planta en el año 138 sin motivo aparente.
+    const paso = Math.trunc(d * 0.2);
+    x += paso === 0 ? Math.sign(d) : paso;
+    pintar();
+    setTimeout(suavizar, 1000 / 24);
+  }
+  function empujar() { if (!animando) { animando = true; suavizar(); } }
+
+  medir(); pintar();
+  addEventListener('resize', () => { medir(); pintar(); });
+
+  addEventListener('wheel', (e) => {
+    e.preventDefault();
+    irA(destino + (Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX) * 2.2);
+    empujar();
+  }, { passive: false });
+
+  addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { irA(destino + ANCHO_ESCENA / 2); empujar(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { irA(destino - ANCHO_ESCENA / 2); empujar(); e.preventDefault(); }
+    if (e.key === 'Home') { irA(0); empujar(); }
+    if (e.key === 'End') { irA(TOPE); empujar(); }
+  });
+
+  let arrastrando = false, ultimo = 0;
+  cv.addEventListener('pointerdown', (e) => {
+    arrastrando = true; ultimo = e.clientX; cv.classList.add('arrastrando');
+    cv.setPointerCapture(e.pointerId);
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (!arrastrando) return;
+    irA(destino - (e.clientX - ultimo) * 2.6);
+    ultimo = e.clientX;
+    x = destino; pintar();
+  });
+  addEventListener('pointerup', () => { arrastrando = false; cv.classList.remove('arrastrando'); });
+
+  for (const m of marcas) {
+    m.addEventListener('click', () => { irA(Number(m.dataset.i) * ANCHO_ESCENA); empujar(); });
+  }
+</script>

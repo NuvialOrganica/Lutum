@@ -104,13 +104,13 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 6 · FASE 5 — Crónica `/cronica`
 
-- [ ] Scroll horizontal con 5 capas de parallax, todo pixel
-- [ ] Cielo interpolado entre eras
-- [ ] **Cuadros flotantes**: una imagen por fecha histórica, sin tapar la escena ← pedido explícito
-- [ ] 11 escenas dibujadas (mundo vacío → cosecha → parque → hueco 372 → ojo → bosque → mar → ciudad → guerra → estrellas → abismo)
-- [ ] Línea de tiempo inferior clicable
-- [ ] Panel de evento con marco pixel
-- [ ] Navegación con teclado y con la rueda
+- [x] Recorrido horizontal con parallax: estrellas, montañas, suelo y guijarros, cada capa a su velocidad
+- [x] Cielo interpolado entre eras, pintado en bandas de 4 px: un degradado continuo en pixel art se ve como suciedad
+- [x] **Cuadros flotantes**: los 11 cuadros enmarcados con su placa de año, flotando por delante del paisaje ← pedido explícito de Cristina
+- [x] Las 11 eras, del mundo vacío al Abismo. El paisaje es procedural y la ilustración lleva el peso
+- [x] Línea de tiempo inferior clicable, con la marca activa resaltada
+- [x] Panel de evento con marco pixel y etiquetas
+- [x] Rueda, arrastre, flechas, Inicio y Fin. Y sin JavaScript la cronología se lee igual, en vertical
 
 ## 7 · FASE 6 — Lugares `/lugares` *(si D1 = sí)*
 

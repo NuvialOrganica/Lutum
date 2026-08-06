@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import EnObras from '../components/EnObras.astro';
+import Volver from '../components/Volver.astro';
+import Cronica from '../components/cronica/Cronica.astro';
 ---
-<Base titulo="La Crónica" fija>
-  <EnObras
-    seccion="ARCHIVO · 1176 AÑOS"
-    que="LA CRÓNICA"
-    fase="FASE 5 · LOS 11 CUADROS YA ESTÁN LISTOS"
-  />
+<Base
+  titulo="La Crónica"
+  descripcion="Mil ciento setenta y seis años de Lutum en línea recta, con un cuadro por cada fecha."
+  fija
+>
+  <Volver texto="LUTUM" />
+  <Cronica />
 </Base>
