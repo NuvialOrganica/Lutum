@@ -86,6 +86,10 @@ GRUPOS = {
 
 
 # ---------------------------------------------------------------------------
+# Pasos que no son grupos de sprites pero se pueden pedir por separado.
+EXTRAS = ("mapa", "og", "cursores")
+
+
 def premultiplicar(img: Image.Image) -> Image.Image:
     """Multiplica RGB por alfa.
 
@@ -323,6 +327,25 @@ def procesar_mapa(dir_in: Path, dir_out: Path) -> str | None:
     return f"mapa.jpg  {im.width}x{im.height}  {antes//1024} KB -> {despues//1024} KB"
 
 
+def procesar_og(dir_out: Path) -> str | None:
+    """La tarjeta de redes sociales.
+
+    La compone el navegador a partir de `tarjeta-og.html` (ahí está el porqué)
+    y aquí sólo se indexa. Es plana y con pocos tonos salvo el planeta, así que
+    64 colores bastan y baja de más de 100 KB a la décima parte.
+    """
+    origen = Path(__file__).parent / "_og.png"
+    if not origen.is_file():
+        return None
+    im = Image.open(origen).convert("RGB")
+    im = im.quantize(colors=64, method=Image.MEDIANCUT, dither=Image.NONE)
+    destino = dir_out / "og.png"
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    im.save(destino, optimize=True)
+    antes, despues = origen.stat().st_size, destino.stat().st_size
+    return f"og.png  {im.width}x{im.height}  {antes//1024} KB -> {despues//1024} KB"
+
+
 def kb(n: int) -> str:
     return f"{n/1024:.0f} KB" if n < 1024 * 1024 else f"{n/1048576:.1f} MB"
 
@@ -371,8 +394,17 @@ def hoja_de_contacto(grupo: str, cfg: dict, dir_out: Path) -> Path | None:
 
 
 def main() -> int:
+    # En Windows, si la salida se redirige, Python cae a cp1252 y el simple
+    # hecho de imprimir un «✓» tumba el script entero. Se fuerza UTF-8.
+    for flujo in (sys.stdout, sys.stderr):
+        try:
+            flujo.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
     ap = argparse.ArgumentParser(description="Convierte los assets de IA en pixel art real.")
-    ap.add_argument("--solo", help="procesar sólo un grupo: " + ", ".join(GRUPOS))
+    ap.add_argument("--solo", help="procesar sólo un grupo: "
+                    + ", ".join(GRUPOS) + ", " + ", ".join(EXTRAS))
     ap.add_argument("--listar", action="store_true", help="enseñar qué haría, sin tocar nada")
     ap.add_argument("--revisar", action="store_true",
                     help="generar una hoja de contacto ampliada por grupo para revisar el resultado")
@@ -385,10 +417,16 @@ def main() -> int:
         print(f"no encuentro la carpeta de origen: {dir_in}", file=sys.stderr)
         return 2
 
-    grupos = {args.solo: GRUPOS[args.solo]} if args.solo else GRUPOS
-    if args.solo and args.solo not in GRUPOS:
-        print(f"grupo desconocido. Hay: {', '.join(GRUPOS)}", file=sys.stderr)
+    # El aviso va antes de tocar el diccionario: si se indexa primero, un
+    # nombre mal escrito revienta con un KeyError en vez de decir qué hay.
+    if args.solo and args.solo not in GRUPOS and args.solo not in EXTRAS:
+        print(f"grupo desconocido. Hay: {', '.join(GRUPOS)}, "
+              f"{', '.join(EXTRAS)}", file=sys.stderr)
         return 2
+    if args.solo in EXTRAS:
+        grupos = {}
+    else:
+        grupos = {args.solo: GRUPOS[args.solo]} if args.solo else GRUPOS
 
     total_antes = total_despues = hechos = faltan = 0
     for nombre, cfg in grupos.items():
@@ -414,10 +452,18 @@ def main() -> int:
             print(f"  ✓ {salida_nombre:22s} {r['res']:>9s}  {r['colores']:>3d} col  "
                   f"{kb(r['antes']):>8s} -> {kb(r['despues']):>8s}  (-{r['ahorro']}%)")
 
-    if not args.listar and not args.solo:
+    # Los extras no son grupos de sprites, pero se dejan invocables con --solo
+    # para poder rehacer uno sin volver a pasar por los 32 assets.
+    if not args.listar and args.solo in (None, "mapa"):
         linea = procesar_mapa(dir_in, dir_out)
         if linea:
             print("\n\033[95mMAPA DEL MUNDO\033[0m")
+            print(f"  ✓ {linea}")
+
+    if not args.listar and args.solo in (None, "og"):
+        linea = procesar_og(dir_out)
+        if linea:
+            print("\n\033[95mTARJETA DE REDES\033[0m")
             print(f"  ✓ {linea}")
 
     if args.revisar and not args.listar:
@@ -427,7 +473,7 @@ def main() -> int:
             if ruta:
                 print(f"  hoja de revisión -> {ruta.relative_to(RAIZ)}")
 
-    if not args.listar and not args.solo:
+    if not args.listar and args.solo in (None, "cursores"):
         print("\n\033[95mCURSORES\033[0m")
         for linea in generar_cursores(dir_out):
             print(f"  ✓ {linea}")

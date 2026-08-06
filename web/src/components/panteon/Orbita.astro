@@ -128,15 +128,29 @@ const PORTALES = [
   @media (min-width:900px){
     .nucleo{ width:192px; height:192px; margin:-96px 0 0 -96px }
   }
+  /* El rótulo de Cladis vive dentro de la rueda, y la rueda gira: tarde o
+     temprano un dios pasa justo por detrás. Va por encima (z-index) y con
+     placa de fondo, que resuelve el cruce a cualquier tamaño de pantalla.
+     Perseguir el hueco con un `bottom` distinto por cada ancho no funciona:
+     hay dos anillos y trece dioses, siempre hay uno pasando. */
   .pie-nucleo{
     position:absolute; left:50%; bottom:calc(50% - 152px);
     transform:translateX(-50%); text-align:center; z-index:5; pointer-events:none;
+    padding:var(--u2) var(--u4);
+    background:rgba(10,4,16,.9); box-shadow:0 0 0 2px var(--c00);
+    max-width:calc(100vw - var(--u8));
   }
   @media (min-width:900px){ .pie-nucleo{ bottom:calc(50% - 196px) } }
   .pie-nucleo b{ display:block; font-size:16px; color:var(--c10); letter-spacing:.24em }
   .pie-nucleo i{
     display:block; font-style:normal; font-size:19px;
-    color:var(--c09); margin-top:var(--u2);
+    color:var(--c09); margin-top:var(--u2); white-space:nowrap;
+  }
+  /* Sin encoger, «La Caprichosa · Año 0» parte por «Año / 0» y la placa se
+     ensancha hasta tapar media órbita. */
+  @media (max-width:720px){
+    .pie-nucleo b{ font-size:12px }
+    .pie-nucleo i{ font-size:16px }
   }
 
   /* ---------- astros ---------- */

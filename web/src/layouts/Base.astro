@@ -1,7 +1,7 @@
 ---
 import '../styles/paleta.css';
 import '../styles/pixel.css';
-import { url } from '../lib/rutas';
+import { url, absoluta } from '../lib/rutas';
 import PunteroPixel from '../components/PunteroPixel.astro';
 import Ajustes from '../components/Ajustes.astro';
 
@@ -27,10 +27,20 @@ const {
   <meta name="theme-color" content="#0A0410" />
   <link rel="icon" type="image/png" href={url('assets/ui/favicon.png')} />
 
+  {/* Open Graph exige URLs absolutas: con una ruta relativa ni WhatsApp ni
+      Discord ni Twitter enseñan nada. Astro.site + Astro.url dan el dominio. */}
+  <link rel="canonical" href={absoluta(Astro.url.pathname)} />
+  <meta property="og:site_name" content="LUTUM" />
+  <meta property="og:locale" content="es_ES" />
   <meta property="og:title" content={`${titulo} · LUTUM`} />
   <meta property="og:description" content={descripcion} />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content={url('assets/planeta.png')} />
+  <meta property="og:url" content={absoluta(Astro.url.pathname)} />
+  <meta property="og:image" content={absoluta(url('assets/og.png'))} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="LUTUM, el mundo de barro" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="preload" as="font" type="font/woff2" crossorigin
         href={url('fonts/PressStart2P.woff2')} />

@@ -6,7 +6,12 @@ web/.astro/
 # Los PNG originales de la IA pesan ~40 MB y no hacen falta para construir la
 # web: lo que se publica es la versión ya convertida en web/public/assets/.
 # Se guardan aparte. Para regenerarlos: herramientas/pixelizar.py
-Assets/
+#
+# La barra inicial NO sobra. Sin ella el patrón vale para cualquier carpeta
+# llamada «assets» a cualquier profundidad y, en Windows, sin distinguir
+# mayúsculas: se tragaba web/public/assets/ entero y la web se habría
+# desplegado sin planeta, sin mapa, sin cursores y sin favicon.
+/Assets/
 
 # los 8 prototipos de la fase de propuestas, ya superados
 propuestas/

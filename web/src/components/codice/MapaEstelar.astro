@@ -83,6 +83,11 @@ const datosCliente = {
   /* ---------- buscador ---------- */
   .buscador{ position:absolute; left:50%; top:var(--u4); transform:translateX(-50%);
     z-index:12; width:min(360px,78vw) }
+  /* En pantalla estrecha el buscador centrado se metía debajo del botón de
+     volver y el placeholder salía cortado. Baja a su propia línea. */
+  @media (max-width:720px){
+    .buscador{ top:var(--u16); width:calc(100vw - var(--u8)) }
+  }
   .buscador input{
     width:100%; background:var(--c01); color:var(--c10);
     font-family:'PxTexto',monospace; font-size:21px;

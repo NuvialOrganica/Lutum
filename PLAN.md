@@ -152,11 +152,18 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 - [ ] ⚠️ **BLOQUEADO — lo tiene que hacer Cristina:** *Settings → Pages → Source = «GitHub Actions»*. Yo soy colaborador, no admin, y por API da 404. El job de desplegar se queda en cola hasta que lo active
 - [x] Todas las rutas pasan por `src/lib/rutas.ts` (`url()` y `pagina()`)
 - [x] `404.astro` en pixel art
-- [ ] Meta tags + Open Graph con el planeta
+- [x] Meta tags + Open Graph. La tarjeta (`og.png`, 1200×630, 30 KB) la compone
+      el navegador desde `herramientas/tarjeta-og.html` con las fuentes reales,
+      porque Pillow no lee woff2. Las URLs salen absolutas vía `absoluta()`:
+      con rutas relativas ni WhatsApp ni Discord enseñan imagen
 
 ## 10 · FASE 9 — Pulido
 
-- [ ] Móvil: todas las pantallas usables en vertical
+- [x] Móvil: las seis pantallas comprobadas en vertical a 375 y 390 px. Ninguna
+      desborda a lo ancho. Tres fallos reales encontrados y corregidos: el mapa
+      salía al 12 % (la regla global `img{max-width:100%}` lo encogía antes de
+      escalarlo), el rótulo de Cladis se cruzaba con la órbita, y el buscador
+      del códice se metía debajo del botón de volver
 - [ ] Sonido opcional (blips de menú), con interruptor y apagado por defecto
 - [ ] Kintsugi en el bloque «la humanidad está restaurada» (si D4 = sí)
 - [ ] Estados vacíos bonitos para las 4 entradas pendientes

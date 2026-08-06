@@ -1,0 +1,78 @@
+<!doctype html>
+<!--
+  Tarjeta para redes (1200x630). No forma parte de la web: se abre con el
+  navegador sin cabeza, se captura y el PNG resultante pasa por pixelizar.py.
+
+  Se compone aquí en vez de con Pillow porque la fuente está en woff2 y
+  Pillow no la lee; el navegador sí, y además usa exactamente la misma
+  tipografía y los mismos colores que el sitio.
+
+    python herramientas/pixelizar.py --solo og
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face{
+    font-family:'PxTitulo';
+    src:url('../web/public/fonts/PressStart2P.woff2') format('woff2');
+    font-display:block;
+  }
+  @font-face{
+    font-family:'PxTexto';
+    src:url('../web/public/fonts/VT323.woff2') format('woff2');
+    font-display:block;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box }
+  html,body{ width:1200px; height:630px; overflow:hidden }
+  body{
+    background:#0A0410;
+    display:grid; grid-template-columns:1fr auto; align-items:center;
+    gap:64px; padding:0 88px;
+    -webkit-font-smoothing:none;
+  }
+  img{ image-rendering:pixelated }
+
+  /* rejilla de estrellas fija: sin azar, para que la tarjeta salga igual
+     cada vez que se regenera */
+  .cielo{
+    position:absolute; inset:0; z-index:0;
+    background-image:
+      radial-gradient(#F5A8C0 1px, transparent 0),
+      radial-gradient(#7C3F6B 1px, transparent 0);
+    background-size:96px 96px, 61px 53px;
+    background-position:12px 20px, 40px 8px;
+    opacity:.55;
+  }
+  .marco{
+    position:absolute; inset:24px; z-index:2; pointer-events:none;
+    box-shadow:inset 0 0 0 4px #0A0410, inset 0 0 0 12px #7C3F6B;
+  }
+  .texto{ position:relative; z-index:3 }
+  h1{
+    font-family:'PxTitulo',monospace; font-size:80px; line-height:1.1;
+    letter-spacing:.08em; color:#F5A8C0;
+    text-shadow:6px 6px 0 #4A1E3C;
+  }
+  h2{
+    font-family:'PxTitulo',monospace; font-size:24px; line-height:1.6;
+    letter-spacing:.14em; color:#E8C9A0; margin-top:28px;
+  }
+  p{
+    font-family:'PxTexto',monospace; font-size:38px; line-height:1.25;
+    color:rgba(245,168,192,.72); margin-top:34px; max-width:19ch;
+  }
+  .planeta{ position:relative; z-index:3; width:384px; height:384px }
+</style>
+</head>
+<body>
+  <div class="cielo"></div>
+  <div class="texto">
+    <h1>LUTUM</h1>
+    <h2>EL MUNDO DE BARRO</h2>
+    <p>Trece dioses amasaron un mundo y luego tuvieron que responder por él.</p>
+  </div>
+  <img class="planeta" src="../web/public/assets/planeta.png" alt="">
+  <div class="marco"></div>
+</body>
+</html>

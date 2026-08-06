@@ -75,7 +75,14 @@ import { url } from '../../lib/rutas';
     cursor:grab; touch-action:none;
   }
   .lienzo.arrastrando{ cursor:grabbing }
-  .mapa{ display:block; image-rendering:auto; user-select:none; -webkit-user-drag:none }
+  /* max-width:none a propósito: la regla global `img{max-width:100%}` encogía
+     el mapa al ancho de la pantalla y luego el `scale` del lienzo lo volvía a
+     encoger encima, así que en el móvil salía al 12% y las chinchetas se lo
+     comían. El lienzo ya se encarga del tamaño; la imagen va a su medida. */
+  .mapa{
+    display:block; width:1402px; max-width:none;
+    image-rendering:auto; user-select:none; -webkit-user-drag:none;
+  }
 
   /* ---------- chinchetas ---------- */
   .chincheta{
@@ -178,6 +185,16 @@ import { url } from '../../lib/rutas';
     .indice{ display:none }
     .leyenda{ display:none }
     .panel-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
+    /* En una pantalla de móvil el mapa entero cabe pequeño, y 27 marcas a
+       tamaño de ratón lo tapan. Se encogen, pero no por debajo de lo que un
+       dedo puede acertar: el área tocable la da el propio botón. */
+    .pincho{ width:10px; height:10px; box-shadow:0 0 0 3px var(--c00), 0 0 0 4px var(--c10) }
+    .chincheta.vacia .pincho{ box-shadow:0 0 0 3px var(--c00), 0 0 0 4px var(--c09) }
+    .chincheta{ padding:var(--u2) }
+    /* En el móvil desaparece el interruptor del RATÓN (no hay ratón que
+       apagar) y sólo queda el del CRT, así que basta con un hueco menor. */
+    .barra{ padding:var(--u3) 76px var(--u3) var(--u4); justify-content:space-between }
+    .lupas{ margin-left:0 }
   }
 </style>
 
