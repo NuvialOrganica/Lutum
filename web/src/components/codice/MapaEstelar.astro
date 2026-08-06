@@ -1,0 +1,443 @@
+---
+import { NODOS, ENLACES, TIPOS } from '../../data/codice';
+import FichaNodo from './FichaNodo.astro';
+
+const datosCliente = {
+  nodos: NODOS.map((n) => ({ s: n.slug, t: n.tipo, p: n.peso, n: n.nombre, sub: n.sub })),
+  enlaces: ENLACES,
+  colores: Object.fromEntries(Object.entries(TIPOS).map(([k, v]) => [k, v.color])),
+};
+---
+
+<div class="codice" id="codice">
+  <canvas id="cielo"></canvas>
+  <div class="etiquetas" id="etiquetas" aria-hidden="true"></div>
+
+  {/* ---------- buscador ---------- */}
+  <div class="buscador">
+    <input id="q" type="search" placeholder="susurra un nombre…" autocomplete="off"
+           aria-label="Buscar una entrada del códice" />
+    <div class="sugerencias" id="sug" hidden></div>
+  </div>
+
+  {/* ---------- filtros ---------- */}
+  <div class="filtros" id="filtros">
+    <p class="px lbl">CONSTELACIONES</p>
+    {Object.entries(TIPOS).map(([k, v]) => (
+      <button class="fch px activo" type="button" data-tipo={k}>
+        <i style={`--c:${v.color}`}></i>{v.nombre}
+      </button>
+    ))}
+  </div>
+
+  {/* ---------- índice accesible, y red de seguridad sin JS ---------- */}
+  <details class="indice">
+    <summary class="px">ÍNDICE COMPLETO · {NODOS.length} ENTRADAS</summary>
+    <ul>
+      {NODOS.map((n) => (
+        <li><button type="button" data-ir={n.slug}>{n.nombre}</button> <span>{n.sub}</span></li>
+      ))}
+    </ul>
+  </details>
+
+  <p class="ayuda px" id="ayuda">ARRASTRA EL CIELO · RUEDA PARA ACERCAR · PULSA UNA ESTRELLA</p>
+
+  {/* ---------- panel ---------- */}
+  <aside class="panel" id="panel" aria-hidden="true" aria-label="Ficha del códice">
+    <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
+    <div class="panel-cuerpo" id="panel-cuerpo">
+      {NODOS.map((n) => (
+        <div class="hoja" data-slug={n.slug} hidden><FichaNodo n={n} /></div>
+      ))}
+    </div>
+  </aside>
+</div>
+
+<script is:inline set:html={`window.__CODICE__ = ${JSON.stringify(datosCliente)};`} />
+
+<style>
+  .codice{ position:relative; height:100svh; overflow:hidden; background:var(--c00) }
+
+  #cielo{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block; image-rendering:pixelated; cursor:grab; z-index:1;
+  }
+  #cielo.arrastrando{ cursor:grabbing }
+
+  /* Las etiquetas van en el DOM, no en el lienzo: a un tercio de resolución
+     el texto sería ilegible, y aquí encima sale con la tipografía correcta. */
+  .etiquetas{ position:absolute; inset:0; z-index:2; pointer-events:none }
+  /* Con :global porque estos span los crea JavaScript y no llevan el
+     atributo con el que Astro acota los estilos. Sin esto se quedaban sin
+     posicionar, con la tipografía del cuerpo y a 22 px. */
+  .etiquetas :global(span){
+    position:absolute; left:0; top:0;
+    font-family:'PxTitulo',monospace; font-size:8px; letter-spacing:.08em;
+    color:var(--c09); white-space:nowrap;
+    text-shadow:2px 2px 0 var(--c00), -2px -2px 0 var(--c00),
+                2px -2px 0 var(--c00), -2px 2px 0 var(--c00);
+  }
+  .etiquetas :global(span[data-fuerte]){ color:var(--c11); font-size:10px }
+  .etiquetas :global(span[data-flojo]){ opacity:.35 }
+
+  /* ---------- buscador ---------- */
+  .buscador{ position:absolute; left:50%; top:var(--u4); transform:translateX(-50%);
+    z-index:12; width:min(360px,78vw) }
+  .buscador input{
+    width:100%; background:var(--c01); color:var(--c10);
+    font-family:'PxTexto',monospace; font-size:21px;
+    padding:var(--u3) var(--u4); border:none; outline:none;
+    box-shadow:0 0 0 2px var(--c05);
+  }
+  .buscador input:focus{ box-shadow:0 0 0 2px var(--c08) }
+  .buscador input::placeholder{ color:var(--c04) }
+  .sugerencias{
+    margin-top:var(--u); background:var(--c01);
+    box-shadow:0 0 0 2px var(--c05); max-height:40vh; overflow-y:auto;
+  }
+  .sugerencias :global(button){
+    display:flex; width:100%; justify-content:space-between; gap:var(--u3);
+    padding:var(--u2) var(--u4); font-size:19px; color:var(--c09); text-align:left;
+  }
+  .sugerencias :global(button:hover){ background:var(--c08); color:var(--c00) }
+  .sugerencias :global(button i){ font-style:normal; font-size:15px; opacity:.7 }
+
+  /* ---------- filtros ---------- */
+  .filtros{ position:absolute; left:var(--u4); bottom:var(--u4); z-index:12;
+    display:flex; flex-direction:column; align-items:flex-start; gap:var(--u2) }
+  .lbl{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.65); margin-bottom:var(--u2) }
+  .fch{
+    display:flex; align-items:center; gap:var(--u2);
+    font-size:8px; letter-spacing:.1em; color:var(--c04);
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c02); transition:none;
+  }
+  .fch i{ width:8px; height:8px; background:var(--c) }
+  .fch:hover{ color:var(--c10) }
+  .fch.activo{ color:var(--c10); box-shadow:0 0 0 2px var(--c05) }
+  .fch:not(.activo) i{ background:transparent; box-shadow:inset 0 0 0 2px var(--c04) }
+
+  /* ---------- índice ---------- */
+  .indice{ position:absolute; right:var(--u4); bottom:var(--u12); z-index:12;
+    max-width:300px; background:var(--c01); box-shadow:0 0 0 2px var(--c05) }
+  .indice summary{ font-size:8px; letter-spacing:.14em; color:var(--c13);
+    padding:var(--u3) var(--u4); list-style:none }
+  .indice summary::-webkit-details-marker{ display:none }
+  .indice[open]{ max-height:56vh; overflow-y:auto }
+  .indice ul{ list-style:none; padding:0 var(--u4) var(--u4) }
+  .indice li{ display:flex; gap:var(--u2); align-items:baseline;
+    padding:var(--u) 0; border-top:2px solid var(--c02) }
+  .indice li button{ font-size:19px; color:var(--c10); text-align:left }
+  .indice li button:hover{ color:var(--c08) }
+  .indice li span{ font-size:15px; color:var(--c04) }
+
+  .ayuda{ position:absolute; left:50%; bottom:var(--u3); transform:translateX(-50%);
+    z-index:11; font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.5);
+    transition:opacity .2s steps(2); pointer-events:none }
+  .codice[data-abierto] .ayuda{ opacity:0 }
+
+  /* ---------- panel ---------- */
+  .panel{
+    position:absolute; top:0; right:0; bottom:0; z-index:20;
+    width:min(520px,100%); background:var(--c00);
+    box-shadow:-4px 0 0 var(--c05), -8px 0 0 var(--c00);
+    transform:translateX(101%); transition:transform .28s steps(7);
+    display:flex; flex-direction:column;
+  }
+  .codice[data-abierto] .panel{ transform:none }
+  .cerrar{ position:absolute; top:var(--u4); right:var(--u4); z-index:2;
+    font-size:16px; color:var(--c09); line-height:1;
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03) }
+  .cerrar:hover{ color:var(--c00); background:var(--c06); box-shadow:0 0 0 2px var(--c10) }
+  .panel-cuerpo{ overflow-y:auto; padding:var(--u12) var(--u6) var(--u16);
+    flex:1; overscroll-behavior:contain }
+
+  @media (max-width:720px){
+    .filtros, .indice{ display:none }
+    .panel-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
+  }
+</style>
+
+<script>
+  type NodoC = { s: string; t: string; p: number; n: string; sub: string;
+                 x: number; y: number; vx: number; vy: number; on: boolean };
+
+  const DATOS = (window as any).__CODICE__ as {
+    nodos: Omit<NodoC, 'x' | 'y' | 'vx' | 'vy' | 'on'>[];
+    enlaces: [string, string][];
+    colores: Record<string, string>;
+  };
+
+  const ESCALA = 3;          // 1 px de arte = 3 px de pantalla
+  const cv = document.getElementById('cielo') as HTMLCanvasElement;
+  const ctx = cv.getContext('2d')!;
+  const capaEtiquetas = document.getElementById('etiquetas')!;
+  const codice = document.getElementById('codice')!;
+  const panel = document.getElementById('panel')!;
+  const hojas = Array.from(panel.querySelectorAll<HTMLElement>('.hoja'));
+
+  const nodos: NodoC[] = DATOS.nodos.map((n, i) => {
+    const a = (i / DATOS.nodos.length) * Math.PI * 2;
+    return { ...n, x: Math.cos(a) * 260, y: Math.sin(a) * 220, vx: 0, vy: 0, on: true };
+  });
+  const porSlug = new Map(nodos.map((n) => [n.s, n]));
+  const enlaces = DATOS.enlaces
+    .map(([a, b]) => ({ a: porSlug.get(a)!, b: porSlug.get(b)! }))
+    .filter((e) => e.a && e.b);
+  const vecinos = new Map<string, Set<string>>();
+  for (const e of enlaces) {
+    if (!vecinos.has(e.a.s)) vecinos.set(e.a.s, new Set());
+    if (!vecinos.has(e.b.s)) vecinos.set(e.b.s, new Set());
+    vecinos.get(e.a.s)!.add(e.b.s);
+    vecinos.get(e.b.s)!.add(e.a.s);
+  }
+
+  /* ---------------------------------------------------------------------
+     El reparto se calcula una vez y siempre igual: la misma semilla da el
+     mismo cielo. Un grafo que se mueve solo es bonito un rato, pero aquí
+     estorba: las estrellas caerían en medios píxeles y no habría forma de
+     acordarse de dónde estaba nada.
+     --------------------------------------------------------------------- */
+  function reposar(vueltas: number) {
+    for (let v = 0; v < vueltas; v++) {
+      for (let i = 0; i < nodos.length; i++) {
+        for (let j = i + 1; j < nodos.length; j++) {
+          const A = nodos[i]!, B = nodos[j]!;
+          const dx = B.x - A.x, dy = B.y - A.y;
+          const d2 = dx * dx + dy * dy || 0.01;
+          const d = Math.sqrt(d2), f = 5200 / d2;
+          A.vx -= (dx / d) * f; A.vy -= (dy / d) * f;
+          B.vx += (dx / d) * f; B.vy += (dy / d) * f;
+        }
+      }
+      for (const e of enlaces) {
+        const dx = e.b.x - e.a.x, dy = e.b.y - e.a.y;
+        const d = Math.hypot(dx, dy) || 0.01;
+        const f = (d - 130) * 0.009;
+        e.a.vx += (dx / d) * f; e.a.vy += (dy / d) * f;
+        e.b.vx -= (dx / d) * f; e.b.vy -= (dy / d) * f;
+      }
+      for (const n of nodos) {
+        n.vx -= n.x * 0.0018; n.vy -= n.y * 0.0018;
+        n.vx *= 0.82; n.vy *= 0.82;
+        n.x += n.vx; n.y += n.vy;
+      }
+    }
+  }
+  reposar(400);
+
+  /* ---------------------------------------------------------------- cámara */
+  let camX = 0, camY = 0, zoom = 1;
+  let ancho = 0, alto = 0;
+  let encima: NodoC | null = null, elegido: NodoC | null = null;
+
+  function medir() {
+    const c = cv.getBoundingClientRect();
+    ancho = Math.max(32, Math.ceil(c.width / ESCALA));
+    alto = Math.max(32, Math.ceil(c.height / ESCALA));
+    cv.width = ancho; cv.height = alto;
+    ctx.imageSmoothingEnabled = false;
+  }
+  const aPantalla = (n: NodoC): [number, number] => [
+    Math.round(ancho / 2 + (n.x - camX) * zoom / ESCALA),
+    Math.round(alto / 2 + (n.y - camY) * zoom / ESCALA),
+  ];
+
+  /** Línea trazada píxel a píxel (Bresenham). Nada de suavizado. */
+  function linea(x0: number, y0: number, x1: number, y1: number, color: string, hueco: number) {
+    ctx.fillStyle = color;
+    let dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0);
+    let sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, err = dx + dy, n = 0;
+    for (;;) {
+      if (hueco === 0 || n % hueco !== 0) ctx.fillRect(x0, y0, 1, 1);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sx; }
+      if (e2 <= dx) { err += dx; y0 += sy; }
+      n++;
+    }
+  }
+
+  /** Estrella de cuatro puntas, como las de los mapas celestes de 8 bits. */
+  function estrella(x: number, y: number, r: number, color: string, brillo: boolean) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x - r, y - r, r * 2 + 1, r * 2 + 1);
+    if (r >= 1) {
+      ctx.fillRect(x - r - 1, y, 1, 1); ctx.fillRect(x + r + 1, y, 1, 1);
+      ctx.fillRect(x, y - r - 1, 1, 1); ctx.fillRect(x, y + r + 1, 1, 1);
+    }
+    if (brillo) {
+      ctx.fillStyle = '#FFFBF0';
+      ctx.fillRect(x - r - 2, y, 1, 1); ctx.fillRect(x + r + 2, y, 1, 1);
+      ctx.fillRect(x, y - r - 2, 1, 1); ctx.fillRect(x, y + r + 2, 1, 1);
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  let etiquetas: HTMLSpanElement[] = [];
+  function prepararEtiquetas() {
+    capaEtiquetas.textContent = '';
+    etiquetas = nodos.map((n) => {
+      const s = document.createElement('span');
+      s.textContent = n.n;
+      capaEtiquetas.appendChild(s);
+      return s;
+    });
+  }
+  prepararEtiquetas();
+
+  function pintar() {
+    ctx.clearRect(0, 0, ancho, alto);
+    const activo = encima ?? elegido;
+    const cerca = activo ? vecinos.get(activo.s) : null;
+
+    for (const e of enlaces) {
+      if (!e.a.on || !e.b.on) continue;
+      const caliente = Boolean(activo) && (e.a === activo || e.b === activo);
+      const [x0, y0] = aPantalla(e.a), [x1, y1] = aPantalla(e.b);
+      linea(x0, y0, x1, y1,
+        caliente ? '#F7E3B0' : (activo ? '#2E1230' : '#4A1B3E'),
+        caliente ? 0 : 2);
+    }
+
+    for (const n of nodos) {
+      if (!n.on) continue;
+      const [x, y] = aPantalla(n);
+      if (x < -8 || y < -8 || x > ancho + 8 || y > alto + 8) continue;
+      const apagado = Boolean(activo) && n !== activo && !cerca?.has(n.s);
+      const r = Math.max(0, Math.round(n.p * 0.9 * zoom) - 1);
+      estrella(x, y, r,
+        apagado ? '#4A1B3E' : (n === activo ? '#FFFBF0' : DATOS.colores[n.t]!),
+        n === activo);
+    }
+
+    // las etiquetas, encima y con tipografía de verdad
+    nodos.forEach((n, i) => {
+      const et = etiquetas[i]!;
+      const importante = n.p >= 2 || n === activo || cerca?.has(n.s) || zoom > 1.6;
+      if (!n.on || !importante) { et.style.display = 'none'; return; }
+      const [x, y] = aPantalla(n);
+      if (x < -60 || y < -20 || x > ancho + 60 || y > alto + 20) { et.style.display = 'none'; return; }
+      et.style.display = 'block';
+      et.style.transform =
+        `translate(${x * ESCALA}px, ${y * ESCALA + Math.round(n.p * 3) * ESCALA}px) translateX(-50%)`;
+      if (n === activo) et.dataset.fuerte = ''; else delete et.dataset.fuerte;
+      if (activo && n !== activo && !cerca?.has(n.s)) et.dataset.flojo = ''; else delete et.dataset.flojo;
+    });
+  }
+
+  function refrescar() { medir(); pintar(); }
+  refrescar();
+  addEventListener('resize', refrescar);
+
+  /* ------------------------------------------------------------ ratón */
+  let arrastrando = false, movido = false, px = 0, py = 0;
+
+  function nodoEn(cx: number, cy: number): NodoC | null {
+    const c = cv.getBoundingClientRect();
+    const x = (cx - c.left) / ESCALA, y = (cy - c.top) / ESCALA;
+    let mejor: NodoC | null = null, mejorD = 12;
+    for (const n of nodos) {
+      if (!n.on) continue;
+      const [nx, ny] = aPantalla(n);
+      const d = Math.hypot(nx - x, ny - y);
+      if (d < mejorD) { mejorD = d; mejor = n; }
+    }
+    return mejor;
+  }
+
+  cv.addEventListener('pointerdown', (e) => {
+    arrastrando = true; movido = false; px = e.clientX; py = e.clientY;
+    cv.classList.add('arrastrando');
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (arrastrando) {
+      const dx = e.clientX - px, dy = e.clientY - py;
+      if (Math.abs(dx) + Math.abs(dy) > 4) movido = true;
+      camX -= dx * ESCALA / zoom; camY -= dy * ESCALA / zoom;
+      px = e.clientX; py = e.clientY;
+      pintar();
+      return;
+    }
+    const n = nodoEn(e.clientX, e.clientY);
+    if (n !== encima) { encima = n; pintar(); }
+  });
+  addEventListener('pointerup', (e) => {
+    if (!arrastrando) return;
+    arrastrando = false; cv.classList.remove('arrastrando');
+    if (movido) return;
+    const n = nodoEn(e.clientX, e.clientY);
+    if (n) abrir(n.s); else cerrar();
+  });
+  cv.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    zoom = Math.min(2.6, Math.max(0.5, zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15)));
+    pintar();
+  }, { passive: false });
+
+  /* ----------------------------------------------------------- panel */
+  function abrir(slug: string, empujar = true) {
+    const hoja = hojas.find((h) => h.dataset.slug === slug);
+    const n = porSlug.get(slug);
+    if (!hoja || !n) return;
+    hojas.forEach((h) => { h.hidden = h !== hoja; });
+    elegido = n;
+    codice.dataset.abierto = '';
+    panel.setAttribute('aria-hidden', 'false');
+    document.getElementById('panel-cuerpo')!.scrollTop = 0;
+    // se centra la estrella en la mitad izquierda, que es la que queda libre
+    camX = n.x + (innerWidth > 900 ? 150 : 0); camY = n.y;
+    pintar();
+    if (empujar) {
+      if (location.hash) history.replaceState(null, '', `#${slug}`);
+      else history.pushState(null, '', `#${slug}`);
+    }
+  }
+  function cerrar(volviendo = false) {
+    delete codice.dataset.abierto;
+    panel.setAttribute('aria-hidden', 'true');
+    elegido = null; pintar();
+    if (!volviendo && location.hash) history.back();
+  }
+  addEventListener('popstate', () => {
+    const s = location.hash.slice(1);
+    if (s) abrir(s, false); else cerrar(true);
+  });
+  document.getElementById('cerrar')!.addEventListener('click', () => cerrar());
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
+
+  // saltar de una ficha a otra, y desde el índice
+  codice.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ir]');
+    if (b?.dataset.ir) abrir(b.dataset.ir);
+  });
+
+  /* --------------------------------------------------------- filtros */
+  for (const chip of Array.from(document.querySelectorAll<HTMLElement>('.fch'))) {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('activo');
+      const on = chip.classList.contains('activo');
+      for (const n of nodos) if (n.t === chip.dataset.tipo) n.on = on;
+      pintar();
+    });
+  }
+
+  /* -------------------------------------------------------- buscador */
+  const q = document.getElementById('q') as HTMLInputElement;
+  const sug = document.getElementById('sug')!;
+  q.addEventListener('input', () => {
+    const v = q.value.trim().toLowerCase();
+    if (!v) { sug.hidden = true; return; }
+    const hallados = nodos
+      .filter((n) => n.n.toLowerCase().includes(v) || n.sub.toLowerCase().includes(v))
+      .slice(0, 8);
+    sug.innerHTML = hallados.length
+      ? hallados.map((n) => `<button type="button" data-ir="${n.s}">${n.n}<i>${n.sub}</i></button>`).join('')
+      : '<button type="button" disabled>sin ecos</button>';
+    sug.hidden = false;
+  });
+  q.addEventListener('blur', () => setTimeout(() => { sug.hidden = true; }, 160));
+  sug.addEventListener('click', () => { sug.hidden = true; q.value = ''; });
+
+  const inicial = location.hash.slice(1);
+  if (inicial) abrir(inicial, false);
+</script>

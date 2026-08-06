@@ -1,11 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import EnObras from '../components/EnObras.astro';
+import Volver from '../components/Volver.astro';
+import MapaEstelar from '../components/codice/MapaEstelar.astro';
 ---
-<Base titulo="El Códice" fija>
-  <EnObras
-    seccion="ARCHIVO · CONSTELACIONES"
-    que="EL CÓDICE"
-    fase="FASE 4 · PENDIENTE"
-  />
+<Base
+  titulo="El Códice"
+  descripcion="Todo el mundo de Lutum como un cielo de constelaciones: 43 entradas y los hilos que las unen."
+  fija
+>
+  <Volver texto="LUTUM" />
+  <MapaEstelar />
 </Base>

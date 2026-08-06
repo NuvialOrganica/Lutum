@@ -93,14 +93,14 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 5 · FASE 4 — Códice `/codice`
 
-- [ ] Mapa de constelaciones en canvas, versión pixel (estrellas de 2×2 y 3×3 px)
-- [ ] 43 nodos + 65 vínculos ya definidos
-- [ ] Líneas de constelación con trazado a píxel (Bresenham, nada de antialias)
-- [ ] Arrastrar / zoom por enteros (×1, ×2, ×3)
-- [ ] Panel lateral pixel con la ficha del nodo
-- [ ] Buscador con teclado
-- [ ] Filtros por tipo (deidad / lugar / hecho / mortal)
-- [ ] Voz de La Relatora en máquina de escribir
+- [x] Mapa de constelaciones en canvas a 1/3 de resolución: estrellas de cuatro puntas dibujadas con rectángulos enteros
+- [x] 43 nodos + 65 vínculos. Las 13 deidades se leen de `deidades.ts`, no se duplican
+- [x] Líneas con Bresenham, punteadas las apagadas y sólidas las de la constelación activa
+- [x] Arrastrar y zoom con la rueda. El reparto se calcula una vez con semilla fija: el mismo cielo siempre, y nada se mueve solo
+- [x] Panel lateral con ficha, datos, susurro de La Relatora y saltos a los vecinos
+- [x] Buscador con sugerencias
+- [x] Filtros por tipo, y un índice completo desplegable que además sirve sin JavaScript
+- [x] Voz de La Relatora en cada ficha
 
 ## 6 · FASE 5 — Crónica `/cronica`
 

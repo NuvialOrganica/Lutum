@@ -1,0 +1,97 @@
+---
+import { TIPOS, type Nodo } from '../../data/codice';
+import { ENLACES, porSlug } from '../../data/codice';
+import { pagina } from '../../lib/rutas';
+
+interface Props { n: Nodo }
+const { n } = Astro.props;
+
+const vecinos = ENLACES
+  .filter(([a, b]) => a === n.slug || b === n.slug)
+  .map(([a, b]) => (a === n.slug ? b : a))
+  .map((s) => porSlug(s))
+  .filter((x): x is Nodo => Boolean(x));
+const tipo = TIPOS[n.tipo];
+---
+
+<article class="ficha">
+  <p class="px tipo" style={`color:${tipo.color}`}>{tipo.nombre.toUpperCase()}</p>
+  <h2 class="px nombre">{n.nombre}</h2>
+  <p class="sub" style={`color:${tipo.color}`}>{n.sub}</p>
+
+  {n.pendiente && (
+    <p class="px aviso">ENTRADA VACÍA EN EL VAULT · SE PUBLICA A PROPÓSITO</p>
+  )}
+
+  <div class="datos marco">
+    <span class="etiqueta">FICHA</span>
+    <dl>{n.datos.map(([k, v]) => <div><dt class="px">{k.toUpperCase()}</dt><dd>{v}</dd></div>)}</dl>
+  </div>
+
+  <div class="texto">{n.texto.map((p) => <p set:html={p} />)}</div>
+
+  <p class="susurro">“{n.susurro}”<small class="px">LA RELATORA</small></p>
+
+  {vecinos.length > 0 && (
+    <div class="vinculos">
+      <p class="px lbl">{vecinos.length} CONEXIONES EN EL CIELO</p>
+      <div class="lista">
+        {vecinos.map((v) => (
+          <button class="vinculo px" type="button" data-ir={v.slug}>
+            <i style={`--c:${TIPOS[v.tipo].color}`}></i>{v.nombre}
+          </button>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {n.tipo === 'deidad' && (
+    <a class="px salir" href={pagina(`deidad/${n.slug}`)}>VER LA FICHA DE DEIDAD ▸</a>
+  )}
+</article>
+
+<style>
+  .tipo{ font-size:8px; letter-spacing:.3em; margin-bottom:var(--u3) }
+  .nombre{ font-size:20px; color:var(--c10); text-shadow:var(--u) var(--u) 0 var(--c05);
+    line-height:1.24 }
+  .sub{ font-size:21px; margin-top:var(--u3) }
+  .aviso{
+    margin-top:var(--u4); font-size:8px; letter-spacing:.12em; color:var(--c00);
+    background:var(--c13); padding:var(--u2) var(--u3); display:inline-block;
+  }
+
+  .datos{ margin:var(--u8) 0; padding:var(--u6) var(--u4) var(--u4) }
+  .datos dl > div{ display:grid; grid-template-columns:104px 1fr; gap:var(--u3); padding:var(--u2) 0 }
+  .datos dl > div + div{ border-top:2px solid var(--c02) }
+  .datos dt{ font-size:8px; color:rgba(245,168,192,.65); letter-spacing:.1em; padding-top:4px }
+  .datos dd{ font-size:19px; color:var(--c09) }
+
+  .texto p{ font-size:21px; line-height:1.32; color:var(--c09) }
+  .texto p + p{ margin-top:var(--u3) }
+  .texto :global(b){ color:var(--c10) }
+  .texto :global(i){ color:var(--c13); font-style:normal }
+
+  .susurro{
+    margin-top:var(--u8); padding-left:var(--u4);
+    border-left:var(--u) solid var(--c08);
+    font-size:21px; color:var(--c11); line-height:1.3;
+  }
+  .susurro small{ display:block; font-size:8px; letter-spacing:.24em;
+    color:rgba(245,168,192,.65); margin-top:var(--u3) }
+
+  .vinculos{ margin-top:var(--u8) }
+  .lbl{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.65); margin-bottom:var(--u3) }
+  .lista{ display:flex; flex-wrap:wrap; gap:var(--u2) }
+  .vinculo{
+    display:flex; align-items:center; gap:var(--u2);
+    font-size:8px; letter-spacing:.1em; color:var(--c09);
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03); transition:none;
+  }
+  .vinculo i{ width:6px; height:6px; background:var(--c) }
+  .vinculo:hover{ color:var(--c00); background:var(--c08); box-shadow:0 0 0 2px var(--c10) }
+  .vinculo:hover i{ background:var(--c00) }
+
+  .salir{ display:inline-block; margin-top:var(--u8);
+    font-size:8px; letter-spacing:.16em; color:var(--c13) }
+  .salir:hover{ color:var(--c11) }
+</style>
