@@ -1,0 +1,7 @@
+Un grupo de humanos, deslumbrados por la grandiosidad de las creaciones de Cladis, decidió intervenir en una de las majestuosas estructuras que la diosa había erigido. Motivados por la ambición y el deseo de alterar el orden divino, comenzaron a desmantelar partes de la obra maestra, ignorando por completo las advertencias que resonaban en el aire.
+
+La diosa, al percatarse de la profanación de su creación, experimentó una oleada de emociones que iban desde la incredulidad hasta la furia más desbordante. Observar cómo sus meticulosas construcciones eran despedazadas por manos mortales la llenó de una ira primordial, alimentada por la traición y la falta de respeto hacia su arte.
+
+En un acto de impulso y dolor, Cladis arrancó uno de sus propios ojos, convocando una tormenta de energía divina que envolvió el lugar de la afrenta. De la esencia desgarrada de la diosa surgió Vigilis, un ser imbuido con el propósito de salvaguardar la integridad de las creaciones divinas y castigar a aquellos que osaran desafiar la voluntad de su creadora.
+
+Desde entonces, Vigilis ha permanecido como guardián vigilante, con sus ojos ardientes fijos en las obras de Cladis, listo para actuar en defensa de su divinidad ante cualquier amenaza que se presente. Este evento histórico marcó un precedente en la relación entre los dioses y los mortales, recordándoles a todos que las creaciones divinas no deben ser alteradas ni profanadas impunemente.

@@ -1,0 +1,46 @@
+/* =========================================================================
+   LUTUM · Paleta cerrada de 16 colores
+   Sacada del planeta. Si hace falta un color nuevo se CAMBIA la paleta,
+   no se añade una excepción suelta.
+   ========================================================================= */
+:root{
+  --c00:#0A0410;  /* negro vino   · fondo base, sombras duras            */
+  --c01:#1A0A18;  /* tinta        · fondo de panel                       */
+  --c02:#2E1230;  /* violeta osc. · paneles secundarios                  */
+  --c03:#4A1B3E;  /* violeta      · bordes apagados, barras vacías       */
+  --c04:#6B2A4E;  /* vino         · rellenos medios                      */
+  --c05:#8E1247;  /* vino intenso · bordes de panel, etiquetas           */
+  --c06:#B4183E;  /* rojo         · alertas, ruina                       */
+  --c07:#C9186B;  /* magenta      · acento fuerte                        */
+  --c08:#E85D97;  /* FUCSIA       · color de marca, enlaces, activo      */
+  --c09:#F5A8C0;  /* rosa claro   · texto secundario destacado           */
+  --c10:#F7E3B0;  /* CREMA        · texto principal, titulares           */
+  --c11:#FFFBF0;  /* blanco hueso · brillos, luz                         */
+  --c12:#C97A2E;  /* ámbar oscuro · metal, madera                        */
+  --c13:#F0B25A;  /* oro          · anotaciones, avisos                  */
+  --c14:#3A2B63;  /* azul noche   · agua, cielo profundo                 */
+  --c15:#6B4A9E;  /* violeta clar.· magia, ilusión                       */
+
+  /* alias semánticos: se usan estos en los componentes, no los c## */
+  --fondo:        var(--c00);
+  --panel:        var(--c01);
+  --panel-2:      var(--c02);
+  --borde:        var(--c10);
+  --borde-int:    var(--c05);
+  --sombra:       var(--c00);
+  --texto:        var(--c10);
+  --texto-suave:  var(--c09);
+  --texto-tenue:  var(--c04);
+  --marca:        var(--c08);
+  --aviso:        var(--c13);
+
+  /* rejilla de 4 px: TODO es múltiplo de esto */
+  --u:  4px;
+  --u2: 8px;
+  --u3: 12px;
+  --u4: 16px;
+  --u6: 24px;
+  --u8: 32px;
+  --u12: 48px;
+  --u16: 64px;
+}

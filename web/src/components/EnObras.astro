@@ -1,0 +1,82 @@
+---
+import Estrellas from './Estrellas.astro';
+import { pagina } from '../lib/rutas';
+
+interface Props {
+  seccion: string;
+  que: string;
+  fase: string;
+}
+const { seccion, que, fase } = Astro.props;
+---
+
+<section class="obras">
+  <Estrellas densidad={16} />
+
+  <div class="caja marco marco--doble">
+    <span class="etiqueta">OBRA SIN TERMINAR</span>
+
+    <p class="px seccion">{seccion}</p>
+    <h1 class="px">{que}</h1>
+
+    <div class="andamio" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <p class="texto">
+      Cladis empezó esto y se distrajo con otra cosa.
+      Es exactamente lo que hace siempre.
+    </p>
+    <p class="fase px">{fase}</p>
+
+    <a class="volver px" href={pagina()}>◂ VOLVER A LA ESTANTERÍA</a>
+  </div>
+</section>
+
+<style>
+  .obras{
+    position:relative; min-height:100svh; display:grid; place-items:center;
+    padding:var(--u8); overflow:hidden;
+    background:radial-gradient(ellipse at 50% 45%, #2A1030 0%, #140618 60%, #0A0410 100%);
+  }
+  .caja{
+    position:relative; z-index:2;
+    max-width:640px; padding:var(--u12) var(--u8) var(--u8);
+    text-align:center;
+  }
+  .seccion{ font-size:8px; letter-spacing:.3em; color:var(--c08); margin-bottom:var(--u4) }
+  .caja h1{ font-size:24px; color:var(--c10); text-shadow:var(--u) var(--u) 0 var(--c05) }
+  @media (min-width:720px){ .caja h1{ font-size:32px } }
+
+  /* un andamio de verdad: barras que suben y bajan, en pasos */
+  .andamio{
+    display:flex; justify-content:center; align-items:flex-end; gap:var(--u2);
+    height:64px; margin:var(--u8) 0;
+  }
+  .andamio span{
+    width:var(--u4); background:var(--c05);
+    box-shadow:0 0 0 2px var(--c00);
+    animation:obra 1.6s steps(4) infinite;
+  }
+  .andamio span:nth-child(1){ animation-delay:0s }
+  .andamio span:nth-child(2){ animation-delay:.2s }
+  .andamio span:nth-child(3){ animation-delay:.4s }
+  .andamio span:nth-child(4){ animation-delay:.6s }
+  .andamio span:nth-child(5){ animation-delay:.8s }
+  @keyframes obra{
+    0%,100%{ height:16px; background:var(--c05) }
+    50%    { height:56px; background:var(--c13) }
+  }
+
+  .texto{ font-size:22px; color:var(--c09); max-width:44ch; margin:0 auto }
+  .fase{
+    font-size:8px; letter-spacing:.2em; color:var(--c13);
+    margin:var(--u6) auto 0; padding:var(--u3) var(--u4);
+    display:table; box-shadow:0 0 0 2px var(--c05);
+  }
+  .volver{
+    display:inline-block; margin-top:var(--u8);
+    font-size:8px; letter-spacing:.18em; color:var(--c09);
+  }
+  .volver:hover{ color:var(--c10) }
+</style>

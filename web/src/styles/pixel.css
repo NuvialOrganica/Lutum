@@ -1,0 +1,139 @@
+/* =========================================================================
+   LUTUM · Base pixel art
+   Reglas duras. Si algo aquí se salta, deja de parecer un juego de 16 bits
+   y pasa a parecer «una web oscura con fuente de píxeles».
+   ========================================================================= */
+
+/* Las @font-face viven en Base.astro, porque la ruta depende del `base` de
+   Astro y aquí no se puede interpolar. Familias: PxTitulo y PxTexto.        */
+
+/* ---------- reset ------------------------------------------------------- */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0 }
+html{ background:var(--fondo); }
+body{
+  background:var(--fondo);
+  color:var(--texto);
+  font-family:'PxTexto',ui-monospace,monospace;
+  font-size:22px;
+  line-height:1.32;
+  overflow-x:hidden;
+  /* NADA de suavizado: el texto pixel tiene que ser duro */
+  -webkit-font-smoothing:none;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeSpeed;
+}
+img,canvas{ image-rendering:pixelated; image-rendering:crisp-edges }
+img{ max-width:100%; display:block }
+button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer }
+a{ color:var(--marca); text-decoration:none }
+a:hover{ color:var(--c11) }
+::selection{ background:var(--marca); color:var(--c00) }
+
+/* ---------- tipografía --------------------------------------------------- */
+.px{ font-family:'PxTitulo',ui-monospace,monospace; letter-spacing:.08em }
+h1,h2,h3,h4{ font-family:'PxTitulo',ui-monospace,monospace; font-weight:400; letter-spacing:.08em }
+/* Press Start 2P rinde como el doble de su tamaño, así que se usa pequeño. */
+h1{ font-size:32px } h2{ font-size:24px } h3{ font-size:16px } h4{ font-size:8px }
+
+/* ---------- movimiento: SIEMPRE por pasos --------------------------------
+   Una transición suave delata al instante que no es pixel art.            */
+.paso    { transition:transform .16s steps(4), opacity .16s steps(4) }
+.paso-len{ transition:transform .32s steps(8), opacity .32s steps(8) }
+
+@keyframes parpadeo{ 50%{ opacity:0 } }
+@keyframes flotar  { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-8px) } }
+@keyframes latido  { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.04) } }
+
+.parpadea{ animation:parpadeo 1s steps(2) infinite }
+.flota   { animation:flotar 4.8s steps(12) infinite }
+
+/* ---------- barra de scroll cuadrada ------------------------------------- */
+*::-webkit-scrollbar{ width:12px; height:12px }
+*::-webkit-scrollbar-track{ background:var(--c01) }
+*::-webkit-scrollbar-thumb{ background:var(--c05); border:2px solid var(--c00) }
+*::-webkit-scrollbar-thumb:hover{ background:var(--c08) }
+*{ scrollbar-width:thin; scrollbar-color:var(--c05) var(--c01) }
+
+/* ---------- foco visible, pero pixel ------------------------------------- */
+:focus{ outline:none }
+:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 4px var(--c00), 0 0 0 8px var(--c13);
+}
+
+/* ---------- MARCO PIXEL --------------------------------------------------
+   Truco: box-shadow sin difuminado y desplazado en cruz. Las esquinas
+   quedan «mordidas», que es exactamente el borde de una caja de diálogo de
+   consola. Sin imágenes, sin border-radius y escala a cualquier tamaño.   */
+.marco{
+  position:relative;
+  background:var(--panel);
+  box-shadow:
+    /* borde claro (cruz, sin esquinas) */
+    0 calc(var(--u) * -1) 0 0 var(--borde),
+    0 var(--u)            0 0 var(--borde),
+    calc(var(--u) * -1) 0 0 0 var(--borde),
+    var(--u) 0            0 0 var(--borde),
+    /* contorno oscuro por fuera */
+    0 calc(var(--u2) * -1) 0 0 var(--c00),
+    0 var(--u2)            0 0 var(--c00),
+    calc(var(--u2) * -1) 0 0 0 var(--c00),
+    var(--u2) 0            0 0 var(--c00),
+    /* las esquinas del contorno, para cerrar la cruz */
+    calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--c00),
+    var(--u) calc(var(--u) * -1)            0 0 var(--c00),
+    calc(var(--u) * -1) var(--u)            0 0 var(--c00),
+    var(--u) var(--u)                       0 0 var(--c00);
+  margin:var(--u2);
+}
+.marco--fino{
+  box-shadow:
+    0 calc(var(--u) * -1) 0 0 var(--borde),
+    0 var(--u)            0 0 var(--borde),
+    calc(var(--u) * -1) 0 0 0 var(--borde),
+    var(--u) 0            0 0 var(--borde);
+  margin:var(--u);
+}
+/* línea interior de acento */
+.marco--doble::before{
+  content:""; position:absolute; inset:var(--u);
+  box-shadow:inset 0 0 0 2px var(--borde-int); pointer-events:none;
+}
+/* etiqueta colgada del borde superior */
+.marco > .etiqueta{
+  position:absolute; top:calc(var(--u3) * -1); left:var(--u4);
+  background:var(--c05); color:var(--c10);
+  font-family:'PxTitulo',monospace; font-size:8px; letter-spacing:.14em;
+  padding:var(--u) var(--u2);
+  box-shadow:0 0 0 var(--u) var(--c00);
+}
+
+/* ---------- CRT ---------------------------------------------------------- */
+.crt-lineas,.crt-vineta{ position:fixed; inset:0; pointer-events:none; z-index:90 }
+.crt-lineas{
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px);
+  mix-blend-mode:multiply;
+}
+.crt-vineta{
+  z-index:89;
+  background:radial-gradient(ellipse at 50% 48%,transparent 52%,rgba(10,4,16,.88) 100%);
+}
+html[data-crt="off"] .crt-lineas,
+html[data-crt="off"] .crt-vineta{ display:none }
+
+/* ---------- respeto por quien no quiere movimiento ----------------------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important; scroll-behavior:auto !important;
+  }
+  .crt-lineas{ display:none }
+}
+
+/* ---------- utilidades --------------------------------------------------- */
+.centro{ display:grid; place-items:center }
+.pantalla{ min-height:100svh }
+.oculto-visual{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
+}

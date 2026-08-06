@@ -1,0 +1,9 @@
+Impulsados por la inspiración divina de Cladis y su incansable búsqueda de la perfección arquitectónica, un grupo selecto de humanos talentosos y devotos se reúnen en la próspera ciudad de Arténica. Guiados por la visión de elevar la grandeza de su civilización a través de la construcción, estos hombres y mujeres decidieron fundar la Orden de los Constructores.
+
+El proceso de fundación de la Orden fue meticulosamente planeado y ejecutado. Se establecieron estrictos criterios de membresía para asegurar la calidad y dedicación de sus miembros. Solo aquellos con habilidades sobresalientes en el arte de la construcción y una devoción inquebrantable hacia los dioses fueron admitidos en sus filas.
+
+La Orden de los Constructores se convirtió rápidamente en una fuerza prominente en Arténica y más allá, atrayendo a los mejores arquitectos, ingenieros y artesanos de toda la región. Su trabajo se caracterizaba por la belleza y la grandeza, con monumentos y estructuras que asombraban a todos los que los contemplaban.
+
+Bajo la dirección de la Orden, Arténica floreció como un centro de innovación arquitectónica y cultural. Sus calles se llenaron de majestuosos palacios, imponentes templos y grandiosas obras públicas, todas ellas dedicadas a honrar a los dioses y enaltecer el espíritu humano.
+
+El legado de la Orden de los Constructores perduró a lo largo de los siglos, dejando una marca indeleble en la historia y la arquitectura de Lutum. Sus obras maestras continúan siendo admiradas y estudiadas hasta el día de hoy, recordando el ingenio y la dedicación de aquellos que dedicaron sus vidas a construir un mundo más grandioso y hermoso.

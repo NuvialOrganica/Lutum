@@ -1,0 +1,117 @@
+---
+import { PORTALES, CIFRAS } from '../data/mundo';
+import { url, pagina } from '../lib/rutas';
+---
+
+<section class="estanteria" id="estanteria">
+  <header class="cabecera">
+    <p class="px indice">ARCHIVO 03</p>
+    <h2 class="px">LA ESTANTERÍA DE CLADIS</h2>
+    <p class="entradilla">
+      Aquí no hay menú. Hay objetos. Coge uno.
+    </p>
+  </header>
+
+  <ul class="portales">
+    {PORTALES.map((p) => (
+      <li>
+        <a class="portal marco" href={pagina(p.destino)} data-id={p.id}>
+          <div class="peana">
+            {p.sprite ? (
+              <img class="sprite" src={url(p.sprite)} width="128" height="128" alt="" />
+            ) : (
+              /* El portal de la Crónica es un cubo negro plano a propósito:
+                 marcador provisional hasta que Cristina decida qué objeto va. */
+              <svg class="sprite cubo" viewBox="0 0 32 32" role="img"
+                   aria-label="Marcador provisional: un cubo negro">
+                <rect x="4"  y="4"  width="24" height="24" fill="#0A0410" />
+                <rect x="4"  y="4"  width="24" height="2"  fill="#2E1230" />
+                <rect x="4"  y="4"  width="2"  height="24" fill="#2E1230" />
+                <rect x="26" y="4"  width="2"  height="24" fill="#000000" />
+                <rect x="4"  y="26" width="24" height="2"  fill="#000000" />
+                <rect x="15" y="12" width="2"  height="2"  fill="#4A1B3E" />
+                <rect x="15" y="16" width="2"  height="4"  fill="#4A1B3E" />
+              </svg>
+            )}
+            {p.provisional && <span class="temp px">PROVISIONAL</span>}
+          </div>
+          <h3 class="px">{p.nombre}</h3>
+          <p>{p.lema}</p>
+          <span class="entrar px">ENTRAR ▸</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <footer class="cifras">
+    {CIFRAS.map((c) => (
+      <div>
+        <b class="px">{c.n}</b>
+        <span>{c.que}</span>
+      </div>
+    ))}
+  </footer>
+</section>
+
+<style>
+  .estanteria{
+    position:relative; z-index:2;
+    padding:0 var(--u6) var(--u16);
+    max-width:1400px; margin:0 auto;
+  }
+  .cabecera{ margin-bottom:var(--u12) }
+  .indice{ font-size:8px; color:var(--c08); letter-spacing:.3em; margin-bottom:var(--u4) }
+  .cabecera h2{ font-size:24px; color:var(--c10); text-shadow:var(--u) var(--u) 0 var(--c05) }
+  @media (min-width:720px){ .cabecera h2{ font-size:32px } }
+  .entradilla{ margin-top:var(--u4); color:var(--c09); font-size:21px }
+
+  .portales{
+    list-style:none;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
+    gap:var(--u8);
+  }
+  .portal{
+    display:block; padding:var(--u6) var(--u4) var(--u4);
+    text-align:center; color:inherit;
+    transition:transform .12s steps(2), background .12s steps(2);
+  }
+  .portal:hover{ transform:translate(-2px,-4px); background:var(--c02) }
+  .portal:active{ transform:translate(2px,2px) }
+
+  .peana{ position:relative; display:grid; place-items:center; min-height:144px }
+  /* arte de 128 mostrado a 128 (×1). En pantallas grandes, a 256 (×2). */
+  .sprite{
+    width:128px; height:128px;
+    animation:flotar 5.6s steps(14) infinite;
+    filter:drop-shadow(0 var(--u2) 0 rgba(0,0,0,.45));
+  }
+  .portal:nth-child(2n) .sprite{ animation-delay:-1.4s }
+  .portal:nth-child(3n) .sprite{ animation-delay:-2.8s }
+  .cubo{ width:96px; height:96px }
+
+  .temp{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    font-size:8px; letter-spacing:.14em; color:var(--c00); background:var(--c06);
+    padding:var(--u) var(--u2); white-space:nowrap;
+  }
+
+  .portal h3{ font-size:12px; color:var(--c10); margin-top:var(--u4) }
+  .portal p{
+    font-size:19px; color:var(--c09); margin-top:var(--u3);
+    min-height:3.2em; line-height:1.28;
+  }
+  .entrar{
+    display:inline-block; margin-top:var(--u3);
+    font-size:8px; letter-spacing:.18em; color:var(--c13);
+  }
+  .portal:hover .entrar{ color:var(--c11) }
+
+  .cifras{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(min(160px,45%),1fr));
+    gap:var(--u6); margin-top:var(--u16);
+    border-top:2px solid var(--c02); padding-top:var(--u8);
+  }
+  .cifras div{ text-align:center }
+  .cifras b{ display:block; font-size:24px; color:var(--c13) }
+  .cifras span{ font-size:19px; color:rgba(245,168,192,.65) }
+</style>

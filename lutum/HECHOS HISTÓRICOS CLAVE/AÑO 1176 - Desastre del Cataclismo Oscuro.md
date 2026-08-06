@@ -1,0 +1,9 @@
+En el año 1176, un evento devastador sacudió las tierras de Lutum, dejando a su paso una estela de destrucción y oscuridad. Lo que comenzó como un experimento de Cladis, la diosa de la creación, para generar vida desde cero, pronto se convirtió en una pesadilla de proporciones catastróficas.
+
+Cladis, ansiosa por explorar los límites de su poder divino, se embarcó en un ambicioso proyecto para crear formas de vida completamente nuevas. Sin embargo, su experimento salió terriblemente mal, desencadenando una explosión mágica de proporciones colosales que arrasó una vasta región del mundo.
+
+La explosión resultante sumió la zona en una oscuridad espesa y perturbadora, transformando el paisaje en un páramo desolado y peligroso. Los sobrevivientes hablaban de criaturas aberrantes y energías corruptas que acechaban en las sombras, sembrando el caos y el terror entre los pocos valientes que se aventuraban en el área.
+
+En realidad, la explosión fue el resultado de los intentos de Cladis por crear vida desde cero, un acto de creación descontrolado que generó seres sin sentido y monstruosidades que amenazaban la existencia misma de la humanidad. Al darse cuenta de su error, Cladis decidió crear el Abismo, un reino oscuro y tormentoso donde desechó todas sus creaciones fallidas, junto con cualquier criatura o estructura que representara una amenaza para el mundo exterior.
+
+Es en este momento oscuro y tumultuoso que surge el nacimiento de Zarath, una creación única y especial deseada por Cladis como compañero para gobernar el Abismo. Sin embargo, Zarath resultó ser un ser obsesivo y visualmente perfecto, cuyo deseo de perfección lo llevó por un camino oscuro y solitario. Rechazado por Cladis y encerrado en el Abismo, Zarath se convirtió en una figura enigmática y temible, cuyo legado perduraría en los anales de la historia de Lutum.

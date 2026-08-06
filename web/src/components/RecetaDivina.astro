@@ -1,0 +1,101 @@
+---
+import { RECETA } from '../data/mundo';
+---
+
+<section class="receta" id="receta">
+  <header class="cabecera">
+    <p class="px indice">ARCHIVO 02</p>
+    <h2 class="px">LA RECETA DIVINA</h2>
+    <p class="entradilla">
+      Casi todos los dioses salen de la misma fórmula. No es una casualidad
+      bonita: es el patrón más fuerte de todo el vault.
+    </p>
+  </header>
+
+  <div class="formula" aria-hidden="true">
+    <span class="px pieza pieza--s">SENTIMIENTO</span>
+    <span class="px mas">+</span>
+    <span class="px pieza pieza--o">OBJETO</span>
+    <span class="px mas">+</span>
+    <span class="px pieza pieza--p">UN TROZO DE CLADIS</span>
+    <span class="px mas igual">=</span>
+    <span class="px pieza pieza--d">UN DIOS</span>
+  </div>
+
+  <div class="tabla-marco marco">
+    <span class="etiqueta">NUEVE ACCIDENTES</span>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="px">DEIDAD</th>
+            <th class="px">SENTIMIENTO</th>
+            <th class="px">OBJETO</th>
+            <th class="px">PARTE DE CLADIS</th>
+            <th class="px">AÑO</th>
+          </tr>
+        </thead>
+        <tbody>
+          {RECETA.map((r) => (
+            <tr>
+              <td class="deidad">{r.deidad}</td>
+              <td class="sent">{r.sentimiento}</td>
+              <td class="obj">{r.objeto}</td>
+              <td class="parte">{r.parte}</td>
+              <td class="anio px">{r.anio}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .receta{
+    position:relative; z-index:2;
+    padding:0 var(--u6) var(--u16);
+    max-width:1400px; margin:0 auto;
+  }
+  .cabecera{ margin-bottom:var(--u8) }
+  .indice{ font-size:8px; color:var(--c08); letter-spacing:.3em; margin-bottom:var(--u4) }
+  .cabecera h2{ font-size:24px; color:var(--c10); text-shadow:var(--u) var(--u) 0 var(--c05) }
+  @media (min-width:720px){ .cabecera h2{ font-size:32px } }
+  .entradilla{ margin-top:var(--u4); max-width:60ch; color:var(--c09); font-size:21px }
+
+  /* la fórmula, como una receta de crafteo de videojuego */
+  .formula{
+    display:flex; flex-wrap:wrap; align-items:center; gap:var(--u3);
+    margin-bottom:var(--u12);
+  }
+  .pieza{
+    font-size:8px; letter-spacing:.14em; padding:var(--u3) var(--u4);
+    color:var(--c00); box-shadow:var(--u) var(--u) 0 rgba(0,0,0,.5);
+  }
+  .pieza--s{ background:var(--c13) }
+  .pieza--o{ background:var(--c09) }
+  .pieza--p{ background:var(--c08) }
+  .pieza--d{ background:var(--c10) }
+  .mas{ font-size:16px; color:var(--c05) }
+  .igual{ color:var(--c13) }
+
+  .tabla-marco{ padding:var(--u6) var(--u4) var(--u4) }
+  .scroll{ overflow-x:auto }
+  table{ width:100%; min-width:720px; border-collapse:collapse }
+  th{
+    text-align:left; font-size:8px; letter-spacing:.16em; color:var(--c08);
+    padding:0 var(--u4) var(--u3); border-bottom:2px solid var(--c03);
+    font-weight:400;
+  }
+  td{
+    padding:var(--u3) var(--u4); font-size:21px;
+    border-bottom:2px solid var(--c02); color:var(--c09);
+  }
+  tr:last-child td{ border-bottom:none }
+  tr:hover td{ background:var(--c02) }
+  .deidad{ color:var(--c10) }
+  .sent{ color:var(--c13) }
+  .obj{ color:var(--c09) }
+  .parte{ color:var(--c11) }
+  .anio{ font-size:8px; color:rgba(245,168,192,.7); letter-spacing:.1em }
+</style>

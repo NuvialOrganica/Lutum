@@ -1,0 +1,111 @@
+---
+/**
+ * Cielo estrellado dibujado a baja resolución y escalado con CSS.
+ *
+ * Esto es lo que hace que se vea como un juego y no como una web: el lienzo
+ * tiene un píxel de 4x4 de pantalla y el navegador lo estira sin suavizar.
+ * El tamaño del lienzo se calcula a partir del hueco real, NO se fija a
+ * 320x180: si se fijara, en una ventana estrecha o muy alta cada píxel se
+ * convertiría en un rectángulo y las estrellas saldrían como rayas.
+ */
+interface Props {
+  /** Estrellas por cada 10.000 píxeles lógicos. */
+  densidad?: number;
+  clase?: string;
+}
+const { densidad = 22, clase = '' } = Astro.props;
+---
+
+<canvas class:list={['estrellas', clase]} data-densidad={densidad} aria-hidden="true"></canvas>
+
+<style>
+  .estrellas{
+    position:absolute; inset:0; width:100%; height:100%;
+    display:block; z-index:0; pointer-events:none;
+  }
+</style>
+
+<script>
+  const ESCALA = 4;   // 1 píxel de arte = 4 px de pantalla
+  const FPS = 12;     // los juegos de la época tampoco iban a 60
+  const PALETA = ['#FFFBF0', '#F7E3B0', '#F5A8C0', '#E85D97', '#6B4A9E'];
+
+  type Estrella = {
+    x: number; y: number; tam: number; color: string;
+    periodo: number; desfase: number; cruz: boolean;
+  };
+
+  document.querySelectorAll<HTMLCanvasElement>('.estrellas').forEach((cv) => {
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+
+    const densidad = Number(cv.dataset.densidad ?? 22);
+    let estrellas: Estrella[] = [];
+    let ancho = 0, alto = 0, t = 0, vivo = false;
+
+    function medir() {
+      const caja = cv.getBoundingClientRect();
+      const nw = Math.max(16, Math.ceil(caja.width / ESCALA));
+      const nh = Math.max(16, Math.ceil(caja.height / ESCALA));
+      if (nw === ancho && nh === alto) return false;
+      ancho = nw; alto = nh;
+      cv.width = ancho; cv.height = alto;
+      ctx!.imageSmoothingEnabled = false;
+      sembrar();
+      return true;
+    }
+
+    function sembrar() {
+      const total = Math.round((ancho * alto) / 10000 * densidad);
+      estrellas = Array.from({ length: total }, () => ({
+        x: Math.floor(Math.random() * ancho),
+        y: Math.floor(Math.random() * alto),
+        tam: Math.random() < 0.12 ? 2 : 1,
+        color: PALETA[Math.floor(Math.random() * PALETA.length)]!,
+        periodo: 24 + Math.floor(Math.random() * 90),
+        desfase: Math.floor(Math.random() * 120),
+        cruz: Math.random() < 0.05,
+      }));
+    }
+
+    function pintar() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, ancho, alto);
+      for (const e of estrellas) {
+        // parpadeo por pasos: encendida, media, apagada. Nada de fundidos.
+        const fase = ((t + e.desfase) % e.periodo) / e.periodo;
+        if (fase > 0.86) continue;
+        ctx.globalAlpha = fase > 0.7 ? 0.45 : 1;
+        ctx.fillStyle = e.color;
+        ctx.fillRect(e.x, e.y, e.tam, e.tam);
+        if (e.cruz && fase < 0.5) {
+          ctx.fillRect(e.x - 1, e.y, 1, 1);
+          ctx.fillRect(e.x + e.tam, e.y, 1, 1);
+          ctx.fillRect(e.x, e.y - 1, 1, 1);
+          ctx.fillRect(e.x, e.y + e.tam, 1, 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function bucle() {
+      if (!vivo) return;
+      t += 1;
+      pintar();
+      setTimeout(() => requestAnimationFrame(bucle), 1000 / FPS);
+    }
+
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    medir();
+    pintar();
+    if (!quieto) { vivo = true; bucle(); }
+
+    new ResizeObserver(() => { if (medir()) pintar(); }).observe(cv);
+
+    // No gastar batería con la pestaña de fondo.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { vivo = false; }
+      else if (!quieto && !vivo) { vivo = true; bucle(); }
+    });
+  });
+</script>

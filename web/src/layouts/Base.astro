@@ -1,0 +1,96 @@
+---
+import '../styles/paleta.css';
+import '../styles/pixel.css';
+import { url } from '../lib/rutas';
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+  /** Pantalla completa sin scroll de página (todo menos la portada). */
+  fija?: boolean;
+}
+const {
+  titulo,
+  descripcion = 'Lutum, el mundo de barro. Enciclopedia del mundo de rol de Cristina.',
+  fija = false,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="es" data-crt="on">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{titulo} · LUTUM</title>
+  <meta name="description" content={descripcion} />
+  <meta name="theme-color" content="#0A0410" />
+  <link rel="icon" type="image/png" href={url('assets/ui/favicon.png')} />
+
+  <meta property="og:title" content={`${titulo} · LUTUM`} />
+  <meta property="og:description" content={descripcion} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content={url('assets/planeta.png')} />
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href={url('fonts/PressStart2P.woff2')} />
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href={url('fonts/VT323.woff2')} />
+
+  <style is:global define:vars={{
+    fuenteTitulo: `url('${url('fonts/PressStart2P.woff2')}')`,
+    fuenteTexto:  `url('${url('fonts/VT323.woff2')}')`,
+    cursorPx:     `url('${url('assets/ui/cursor.png')}')`,
+  }}>
+    /* font-display:block a propósito: con tipografías bitmap el «swap» enseña
+       un instante de Arial y salta todo el maquetado. */
+    @font-face{
+      font-family:'PxTitulo';
+      src:var(--fuenteTitulo) format('woff2');
+      font-weight:400; font-style:normal; font-display:block;
+    }
+    @font-face{
+      font-family:'PxTexto';
+      src:var(--fuenteTexto) format('woff2');
+      font-weight:400; font-style:normal; font-display:block;
+    }
+  </style>
+</head>
+
+<body class={fija ? 'fija' : ''}>
+  <slot />
+
+  <div class="crt-vineta" aria-hidden="true"></div>
+  <div class="crt-lineas" aria-hidden="true"></div>
+
+  <button id="crt" class="px" type="button" aria-pressed="true">CRT</button>
+
+<style>
+  body.fija{ height:100svh; overflow:hidden }
+
+  #crt{
+    position:fixed; right:var(--u3); bottom:var(--u3); z-index:95;
+    font-size:8px; letter-spacing:.16em; color:var(--c04);
+    padding:var(--u) var(--u2);
+    box-shadow:0 0 0 2px var(--c03);
+    transition:color .16s steps(2), box-shadow .16s steps(2);
+  }
+  #crt:hover{ color:var(--c10); box-shadow:0 0 0 2px var(--c08) }
+  #crt[aria-pressed="false"]{ color:var(--c03) }
+</style>
+
+<script>
+  // Interruptor del efecto CRT. Hay gente a la que las scanlines le molestan
+  // de verdad, así que se puede apagar y se recuerda.
+  const boton = document.getElementById('crt')!;
+  const raiz = document.documentElement;
+  const guardado = localStorage.getItem('lutum-crt');
+  if (guardado === 'off') { raiz.dataset.crt = 'off'; boton.setAttribute('aria-pressed', 'false'); }
+
+  boton.addEventListener('click', () => {
+    const apagado = raiz.dataset.crt === 'off';
+    raiz.dataset.crt = apagado ? 'on' : 'off';
+    boton.setAttribute('aria-pressed', String(apagado));
+    localStorage.setItem('lutum-crt', apagado ? 'on' : 'off');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+---
+import Estrellas from './Estrellas.astro';
+import { url } from '../lib/rutas';
+---
+
+<section class="portada" id="portada">
+  <Estrellas densidad={26} />
+
+  <div class="contenido">
+    <img
+      class="planeta"
+      src={url('assets/planeta.png')}
+      width="256" height="256"
+      alt="El planeta Lutum, una mancha rosa y dorada en el vacío"
+      fetchpriority="high"
+    />
+
+    <h1 class="titulo">LUTUM</h1>
+    <p class="lema px">EL MUNDO DE BARRO</p>
+
+    <button class="empezar px parpadea" id="empezar" type="button">
+      PULSA ENTER
+    </button>
+  </div>
+
+  <div class="pista px" aria-hidden="true">
+    <span>BAJA PARA LEER</span>
+    <em>▼</em>
+  </div>
+</section>
+
+<style>
+  .portada{
+    position:relative;
+    min-height:100svh;
+    display:grid; place-items:center;
+    padding:var(--u16) var(--u6) var(--u16);
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 42%, #3A1440 0%, #170718 58%, #0A0410 100%);
+  }
+  .contenido{ position:relative; z-index:2; text-align:center }
+
+  /* Escalado SÓLO por enteros: el arte mide 256, así que ×1 o ×2. Nada de
+     tamaños intermedios, que es lo que produce píxeles de distinto grosor. */
+  .planeta{
+    width:256px; height:256px; margin:0 auto;
+    animation:flotar 7.2s steps(18) infinite;
+    filter:drop-shadow(0 0 var(--u8) rgba(232,93,151,.45));
+  }
+  /* ×2 sólo cuando de verdad cabe: si no, se come el «PULSA ENTER» */
+  @media (min-width:1200px) and (min-height:1040px){
+    .planeta{ width:512px; height:512px }
+  }
+
+  /* Press Start 2P está dibujada sobre una rejilla de 8 px: los tamaños que
+     son múltiplo de 8 salen nítidos y el resto, ligeramente sucios. */
+  .titulo{
+    font-size:40px; margin-top:var(--u8); color:var(--c10);
+    text-shadow:
+      var(--u) var(--u) 0 var(--c05),
+      var(--u2) var(--u2) 0 rgba(0,0,0,.55);
+  }
+  @media (min-width:720px){ .titulo{ font-size:64px } }
+  @media (min-width:1200px){ .titulo{ font-size:80px } }
+
+  .lema{
+    font-size:8px; color:var(--c09); letter-spacing:.32em;
+    margin-top:var(--u4);
+  }
+  @media (min-width:720px){ .lema{ font-size:16px; letter-spacing:.4em } }
+
+  .empezar{
+    margin-top:var(--u8);
+    font-size:16px; color:var(--c13); letter-spacing:.2em;
+    padding:var(--u2) var(--u4);
+  }
+  .empezar:hover{ color:var(--c11); animation:none }
+
+  .pista{
+    position:absolute; left:0; right:0; bottom:var(--u6); z-index:2;
+    text-align:center; font-size:8px; letter-spacing:.24em;
+    color:rgba(245,168,192,.5);
+  }
+  .pista em{
+    display:block; font-style:normal; font-size:16px; color:var(--c05);
+    margin-top:var(--u2); animation:flotar 2.4s steps(6) infinite;
+  }
+
+  @media (max-height:640px){
+    .planeta{ width:128px; height:128px }
+    .titulo{ font-size:32px }
+    .empezar{ margin-top:var(--u6) }
+  }
+</style>
+
+<script>
+  const ir = () => document.getElementById('mundo')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  document.getElementById('empezar')?.addEventListener('click', ir);
+
+  // «Pulsa ENTER» tiene que funcionar de verdad, no ser sólo decorado.
+  addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    // salvo que estés escribiendo o enfocando otro botón
+    const foco = document.activeElement;
+    if (foco && foco !== document.body && foco.id !== 'empezar') return;
+    if (scrollY > 40) return;
+    e.preventDefault();
+    ir();
+  });
+</script>

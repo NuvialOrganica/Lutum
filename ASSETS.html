@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUTUM · Assets que hacen falta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c00:#0A0410; --c01:#1A0A18; --c02:#2E1230; --c03:#4A1B3E;
+  --c04:#6B2A4E; --c05:#8E1247; --c06:#B4183E; --c07:#C9186B;
+  --c08:#E85D97; --c09:#F5A8C0; --c10:#F7E3B0; --c11:#FFFBF0;
+  --c12:#C97A2E; --c13:#F0B25A; --c14:#3A2B63; --c15:#6B4A9E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--c00);color:var(--c10);font-family:'VT323',monospace;font-size:21px;
+  image-rendering:pixelated;-webkit-font-smoothing:none;overflow-x:hidden}
+::selection{background:var(--c08);color:var(--c00)}
+.px{font-family:'Press Start 2P',monospace}
+
+#bg{position:fixed;inset:0;z-index:0;background:url('propuestas/assets/fondo-px.png') center/cover;
+  opacity:.22;image-rendering:pixelated}
+#tint{position:fixed;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(10,4,16,.72),rgba(10,4,16,.94))}
+.scan{position:fixed;inset:0;z-index:60;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0 2px,transparent 2px 4px);mix-blend-mode:multiply}
+main{position:relative;z-index:5;max-width:1360px;margin:0 auto;padding:0 24px 120px}
+
+/* ---------- marco pixel ---------- */
+.box{background:var(--c01);border:4px solid var(--c10);position:relative;
+  box-shadow:0 0 0 4px var(--c00), inset 0 0 0 2px var(--c05), 8px 8px 0 rgba(0,0,0,.55)}
+.box>.tag{position:absolute;top:-14px;left:16px;background:var(--c05);color:var(--c10);
+  font-size:9px;padding:6px 10px;box-shadow:0 0 0 4px var(--c00)}
+
+/* ---------- cabecera ---------- */
+header{text-align:center;padding:72px 0 44px}
+header img{width:132px;image-rendering:pixelated;
+  filter:drop-shadow(0 0 24px rgba(232,93,151,.55));animation:bob 6s steps(12) infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+header h1{font-size:clamp(22px,4.4vw,42px);color:var(--c10);letter-spacing:.12em;margin:24px 0 14px;
+  text-shadow:4px 4px 0 var(--c05), 8px 8px 0 rgba(0,0,0,.5)}
+header h2{font-size:10px;color:var(--c09);letter-spacing:.3em;margin-bottom:28px}
+header .sub{max-width:680px;margin:0 auto;font-size:22px;line-height:1.35;color:var(--c09)}
+header .sub b{color:var(--c10)}
+
+/* ---------- progreso ---------- */
+.prog{max-width:680px;margin:32px auto 0;text-align:left}
+.prog .lb{display:flex;justify-content:space-between;font-size:9px;color:var(--c09);margin-bottom:10px;letter-spacing:.12em}
+.prog .lb b{color:var(--c13)}
+.pbar{display:flex;gap:3px}
+.pbar i{flex:1;height:16px;background:var(--c03);box-shadow:inset 0 0 0 2px var(--c00)}
+.pbar i.f{background:var(--c08)}
+
+/* ---------- paleta ---------- */
+.pal{display:flex;flex-wrap:wrap;gap:0;margin:44px auto 0;max-width:960px;
+  box-shadow:0 0 0 4px var(--c00), 8px 8px 0 rgba(0,0,0,.5)}
+.pal button{flex:1 1 62px;height:64px;border:none;cursor:pointer;position:relative;
+  font-family:'Press Start 2P',monospace;font-size:6.5px;color:rgba(255,255,255,.5);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;transition:.15s steps(2)}
+.pal button:hover{transform:translateY(-6px);z-index:2;box-shadow:0 6px 0 rgba(0,0,0,.5);color:#fff}
+
+/* ---------- reglas ---------- */
+.reglas{margin:64px 0 0;padding:34px 32px 32px}
+.reglas h3{font-size:12px;color:var(--c13);letter-spacing:.14em;margin-bottom:20px}
+.reglas ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px 28px}
+.reglas li{font-size:20px;line-height:1.35;color:var(--c09);padding-left:22px;position:relative}
+.reglas li::before{content:"■";position:absolute;left:0;color:var(--c08);font-size:12px;top:4px}
+.reglas li b{color:var(--c10)}
+
+/* ---------- tandas ---------- */
+.tanda{margin-top:88px}
+.thead{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:12px}
+.thead .n{font-family:'Press Start 2P',monospace;font-size:34px;color:var(--c03)}
+.thead h2{font-family:'Press Start 2P',monospace;font-size:15px;color:var(--c10);letter-spacing:.08em;
+  text-shadow:3px 3px 0 var(--c05)}
+.thead .cnt{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--c00);background:var(--c13);
+  padding:6px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.5)}
+.thead .cnt.opt{background:var(--c03);color:var(--c09)}
+.tdesc{font-size:21px;color:var(--c09);margin:0 0 12px;max-width:78ch;line-height:1.35}
+.tdesc b{color:var(--c10)}
+.tbtns{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+
+/* ---------- botones ---------- */
+.btn{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:.08em;cursor:pointer;
+  background:var(--c02);color:var(--c09);border:3px solid var(--c05);padding:11px 14px;
+  box-shadow:4px 4px 0 rgba(0,0,0,.55);transition:.1s steps(2)}
+.btn:hover{background:var(--c08);color:var(--c00);border-color:var(--c10)}
+.btn:active{transform:translate(4px,4px);box-shadow:none}
+.btn.ok{background:var(--c13);color:var(--c00);border-color:var(--c10)}
+
+/* ---------- rejilla de assets ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:34px 26px}
+.card{position:relative;padding:0}
+.card.done{opacity:.55}
+.card.done .slot{box-shadow:inset 0 0 0 4px var(--c13)}
+.slot{position:relative;width:100%;display:grid;place-items:center;
+  background-image:
+    linear-gradient(45deg,var(--c02) 25%,transparent 25%,transparent 75%,var(--c02) 75%),
+    linear-gradient(45deg,var(--c02) 25%,var(--c01) 25%,var(--c01) 75%,var(--c02) 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px;
+  border-bottom:4px solid var(--c10)}
+.slot.bg{background-image:none;background:var(--c14)}
+.slot .ph{text-align:center;padding:16px}
+.slot .ph .ico{font-size:44px;line-height:1;margin-bottom:12px;filter:grayscale(.2)}
+.slot .ph .dim{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--c09);letter-spacing:.1em}
+.slot .ph .tp{font-family:'Press Start 2P',monospace;font-size:6.5px;color:var(--c13);
+  letter-spacing:.14em;margin-top:10px}
+.slot .num{position:absolute;top:8px;left:8px;font-family:'Press Start 2P',monospace;font-size:8px;
+  background:var(--c00);color:var(--c13);padding:5px 7px}
+.slot img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+
+.cbody{padding:20px 20px 22px}
+.fname{font-family:'Press Start 2P',monospace;font-size:9.5px;color:var(--c10);letter-spacing:.04em;
+  word-break:break-all;margin-bottom:8px}
+.fpath{font-size:17px;color:var(--c04);margin-bottom:14px;word-break:break-all}
+.fpath b{color:var(--c09)}
+.fdesc{font-size:20px;line-height:1.32;color:var(--c09);margin-bottom:16px}
+.fdesc b{color:var(--c10)}
+.prompt{background:var(--c00);border:2px solid var(--c03);padding:12px 13px;font-size:17px;
+  line-height:1.35;color:var(--c04);max-height:118px;overflow:auto;margin-bottom:14px;
+  white-space:pre-wrap;word-break:break-word}
+.prompt::-webkit-scrollbar{width:8px}
+.prompt::-webkit-scrollbar-thumb{background:var(--c05)}
+.prompt::-webkit-scrollbar-track{background:var(--c01)}
+.cactions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- no pedir ---------- */
+.nope{margin-top:88px;padding:34px 32px 32px;border-color:var(--c13)}
+.nope .tag{background:var(--c13);color:var(--c00)}
+.nope h3{font-size:12px;color:var(--c13);letter-spacing:.14em;margin-bottom:16px}
+.nope p{font-size:21px;color:var(--c09);line-height:1.36;max-width:80ch}
+.nope ul{margin:16px 0 0 0;list-style:none;display:flex;gap:10px;flex-wrap:wrap}
+.nope li{font-family:'Press Start 2P',monospace;font-size:7.5px;color:var(--c09);
+  border:2px solid var(--c03);padding:8px 10px}
+
+footer{margin-top:96px;text-align:center;font-family:'Press Start 2P',monospace;font-size:8px;
+  color:var(--c04);letter-spacing:.16em;line-height:2.4}
+footer b{color:var(--c08)}
+
+/* aviso de copiado */
+#toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(120px);z-index:80;
+  background:var(--c13);color:var(--c00);font-family:'Press Start 2P',monospace;font-size:9px;
+  padding:14px 20px;box-shadow:0 0 0 4px var(--c00),6px 6px 0 rgba(0,0,0,.6);
+  transition:transform .2s steps(4)}
+#toast.on{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="bg"></div><div id="tint"></div>
+
+<main>
+<header>
+  <img src="propuestas/assets/planeta-px.png" alt="Lutum">
+  <h1 class="px">ASSETS</h1>
+  <h2 class="px">LO QUE HACE FALTA GENERAR</h2>
+  <p class="sub">Cada hueco de abajo es una imagen que necesita la web. Pulsa <b>COPIAR PROMPT</b>,
+    pégalo en ChatGPT, y deja el PNG resultante en la carpeta que indica cada ficha.
+    Marca <b>LISTO</b> cuando lo tengas — se guarda solo.</p>
+
+  <div class="prog">
+    <div class="lb"><span class="px">PROGRESO</span><b class="px" id="pcount">0 / 0</b></div>
+    <div class="pbar" id="pbar"></div>
+  </div>
+</header>
+
+<div class="pal" id="pal"></div>
+
+<section class="box reglas">
+  <div class="tag px">REGLAS COMUNES</div>
+  <h3 class="px">VALEN PARA TODOS LOS PROMPTS</h3>
+  <ul>
+    <li>Estilo <b>pixel art de 16 bits</b>, sin antialiasing, con paleta limitada.</li>
+    <li>Colores: <b>fucsia, rosa, crema, vino, violeta noche y oro</b> (los de arriba, pulsa uno para copiarlo).</li>
+    <li><b>Fondo transparente</b> en todo, menos en los cuadros de suceso histórico.</li>
+    <li><b>Sin texto ni letras</b> dentro de la imagen. Nunca.</li>
+    <li>Formato <b>PNG</b>. Si sale con fondo blanco, hay que pedirlo otra vez.</li>
+    <li>Sujeto <b>centrado</b> y completo, sin recortes por los bordes.</li>
+    <li>Mejor <b>poco detalle y mucha silueta</b>: se va a ver pequeño y con la pantalla en modo CRT.</li>
+    <li>Si una queda rara, se vuelve a pedir. No pasa nada, es barato.</li>
+  </ul>
+</section>
+
+<div id="tandas"></div>
+
+<section class="box nope">
+  <div class="tag px">NO PEDIR</div>
+  <h3 class="px">ESTO LO DIBUJO YO</h3>
+  <p>Los iconos pequeños, los sprites de la órbita, los tiles del mapa, las barras y los marcos
+    los dibujo directamente en canvas y CSS. Salen más limpios, encajan a la perfección con la
+    rejilla de píxeles y pesan la centésima parte que una imagen generada.</p>
+  <ul>
+    <li>30 ICONOS DE ORIGEN</li>
+    <li>13 SPRITES DE ÓRBITA</li>
+    <li>TILES DEL MAPA</li>
+    <li>MARCOS Y BOTONES</li>
+    <li>BARRAS DE ATRIBUTO</li>
+    <li>CUBO NEGRO PROVISIONAL</li>
+    <li>ESTRELLAS DE FONDO</li>
+  </ul>
+</section>
+
+<footer>
+  LUTUM · <b>31 ASSETS</b> QUE PEDIR<br>
+  PRIORIDAD: TANDA 1 PRIMERO — BLOQUEA LA PANTALLA PRINCIPAL
+</footer>
+</main>
+
+<div id="toast" class="px">COPIADO</div>
+<div class="scan"></div>
+
+<script>
+/* ============ PALETA ============ */
+const PAL=[['00','#0A0410','NEGRO'],['01','#1A0A18','TINTA'],['02','#2E1230','VIOLETA'],
+['03','#4A1B3E','VIOL+'],['04','#6B2A4E','VINO'],['05','#8E1247','VINO+'],['06','#B4183E','ROJO'],
+['07','#C9186B','MAGENTA'],['08','#E85D97','FUCSIA'],['09','#F5A8C0','ROSA'],['10','#F7E3B0','CREMA'],
+['11','#FFFBF0','HUESO'],['12','#C97A2E','AMBAR'],['13','#F0B25A','ORO'],['14','#3A2B63','NOCHE'],
+['15','#6B4A9E','MAGIA']];
+const palBox=document.getElementById('pal');
+PAL.forEach(([n,hex,name])=>{
+  const b=document.createElement('button');
+  b.style.background=hex; b.textContent=hex.slice(1);
+  b.title=name+' '+hex;
+  if(['10','11','13','09'].includes(n)) b.style.color='rgba(0,0,0,.55)';
+  b.onclick=()=>copiar(hex,'COLOR '+hex+' COPIADO');
+  palBox.appendChild(b);
+});
+
+/* ============ PROMPTS ============ */
+const BASE_TR='Pixel art de 16 bits, sin antialiasing, paleta limitada de rosas, cremas y vinos '+
+'(fucsia #E85D97, rosa #F5A8C0, crema #F7E3B0, vino #8E1247, violeta noche #2E1230, oro #F0B25A). '+
+'Fondo completamente transparente. Sin texto ni letras. ';
+const BASE_ESC='Pixel art de 16 bits, sin antialiasing, escena horizontal tipo viñeta de videojuego retro, '+
+'paleta limitada de rosas, cremas, vinos y violetas (#E85D97, #F5A8C0, #F7E3B0, #8E1247, #2E1230, #F0B25A). '+
+'Sin texto ni letras. Imagen de 800x600. ';
+
+const TANDAS=[
+{
+ n:'01', t:'ILUSTRACIONES DE DEIDAD', prio:true,
+ d:'Una por cada dios. Son <b>lo más importante</b>: aparecen a la derecha cuando Cristina pulsa sobre un dios en el panteón. Sin estas, la pantalla principal no se puede montar.',
+ dest:'public/assets/deidades/', dim:'1024 × 1024', ratio:1, tp:'FONDO TRANSPARENTE', bg:false,
+ items:[
+ ['cladis.png','Cladis','La diosa suprema, artesana y caprichosa.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Una diosa artesana de pie, semblante sereno pero mirada penetrante, manos grandes y fuertes de trabajar la piedra, delantal de forja sobre una túnica, sosteniendo un enorme martillo de forja apoyado en el suelo. Polvo de barro rosado flotando a su alrededor y un aura rosa suave.'],
+ ['egon.png','Egon','El Devorador de Almas.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Un dios de la muerte imponente y dominante, rostro afilado y cruel, los ojos son dos llamas rojas ardiendo, capa hecha de jirones de sombra, sostiene un látigo de sombras que se retuerce como serpientes. Una rosa con espinas prendida en el pecho.'],
+ ['lunaris.png','Lunaris','El Juez Lunar de los Ciclos.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Figura masculina delgadísima y antinatural, piel pálida como la luna sin luz directa, cuello mucho más largo de lo humano, cabello negro larguísimo y liso que flota sin viento. En lugar de rostro tiene fases lunares superpuestas y en conflicto. Sostiene una hoz de luz negra.'],
+ ['armonia.png','Armonia','El Divino Melodista.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Deidad andrógina y etérea, cabello de muchos colores flotando en el aire como movido por una brisa constante, ojos brillantes de pasión creativa, túnica vaporosa, sostiene una lira dorada. Notas musicales hechas de luz flotando alrededor.'],
+ ['miraxis.png','Miraxis','La Tejedora de Fantasías.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Figura elegante y sonriente, con los ojos como espejos rotos que reflejan cosas imposibles, ropa teatral de artista, sostiene un abanico hecho de fragmentos de espejo. De los espejos salen paisajes que no existen.'],
+ ['valther.png','Valther','Señor de las Manos Doradas.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Un dios mercader de ropajes ricos y sonrisa satisfecha, los dedos le brillan como lingotes de oro macizo, sostiene una balanza encadenada. Monedas de oro flotando en el aire a su alrededor.'],
+ ['vigilis.png','Vigilis','El Dios de la Observación.',
+  'Imagen cuadrada 1024x1024, elemento centrado. Un globo ocular gigante flotando en el aire, sin cuerpo, con el iris ardiendo y rodeado de un anillo de llamas divinas doradas. De la parte inferior caen vetas de fuego espiritual.'],
+ ['arbo.png','Arbo','El Espíritu de la Naturaleza.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Ser humanoide alto y sereno con la piel como corteza de árbol en tonos verdes y marrones, hojas y flores brotando de los hombros y el cuerpo, raíces en lugar de pies, mirada sabia y calmada.'],
+ ['lydara.png','Lydara','La Dama de las Aguas.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Diosa de belleza etérea, cabello claro ondulante como agua, ojos que brillan como el sol reflejado en el mar, túnica azul verdosa. Un delfín radiante se enrosca a su lado y sostiene una perla luminosa en la mano.'],
+ ['zax.png','Zax','La Estrella Fugaz.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Un mago convertido en dios del espacio, capa larga cubierta de estrellas y constelaciones reales, diadema de astrónomo, sostiene una lanza tridente. Detrás de él una aurora boreal azul.'],
+ ['zarath.png','Zarath','El Señor del Abismo.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Figura oscura, hermosa y obsesivamente perfecta, mirada carmesí, la silueta se deshace en humo por los bordes, sostiene una pica medieval. Detrás, una esfera negra envuelta en llamas infernales.'],
+ ['litt.png','Litt','El Mensajero de la Tranquilidad.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Un niño pequeño de ojos azules muy claros y cabello dorado, ropas blancas sencillas, expresión tranquila y acogedora, sosteniendo entre las manos una llamita suave envuelta en un halo de luz cálida.'],
+ ['relatora.png','La Relatora','La que narra el mundo.',
+  'Imagen cuadrada 1024x1024, personaje centrado de cuerpo entero. Figura femenina envuelta en una larga capa blanca que le cubre todo el cuerpo. Sólo se le ven el rostro y las manos, y están formados por constelaciones y estrellas brillantes sobre un fondo oscuro, como un cielo nocturno con forma de cara. Un libro abierto flota ante ella.']
+ ]
+},
+{
+ n:'02', t:'OBJETOS-PORTAL', prio:false,
+ d:'La web no tiene menú: tiene <b>objetos flotando</b> que llevan a cada sección. Se ven en la portada y también dentro del panteón.',
+ dest:'public/assets/objetos/', dim:'512 × 512', ratio:1, tp:'FONDO TRANSPARENTE', bg:false,
+ items:[
+ ['martillo.png','Martillo y yunque','Lleva al PANTEÓN.',
+  'Imagen cuadrada 512x512, objeto solo centrado, sin personaje, con un brillo tenue alrededor. Un martillo de forja pesado cruzado sobre un yunque de piedra, en vista de tres cuartos. Chispas doradas saltando.'],
+ ['telescopio.png','Telescopio','Lleva al CÓDICE de constelaciones.',
+  'Imagen cuadrada 512x512, objeto solo centrado, sin personaje, con un brillo tenue alrededor. Un telescopio de latón antiguo sobre un trípode de madera, apuntando hacia arriba, con constelaciones grabadas en el tubo.'],
+ ['mapa.png','Pergamino','Lleva a LUGARES.',
+  'Imagen cuadrada 512x512, objeto solo centrado, sin personaje, con un brillo tenue alrededor. Un pergamino enrollado a medias que deja ver un mapa dibujado a mano con montañas, un río y una costa, atado con una cinta.']
+ ]
+},
+{
+ n:'03', t:'CUADROS DE SUCESO HISTÓRICO', prio:false,
+ d:'Uno por cada fecha de la cronología. Son las <b>imágenes sueltas flotantes</b> que pidió Cristina para la Crónica: no tapan la escena, van encima como una viñeta. Estas <b>sí llevan fondo</b>.',
+ dest:'public/assets/historia/', dim:'800 × 600', ratio:0.75, tp:'CON FONDO', bg:true,
+ items:[
+ ['a0.png','Año 0 · Creación Primordial','El mundo recién hecho y vacío.',
+  'Un planeta plano y vacío al amanecer. Montañas recién levantadas, un río naciendo entre ellas, sin edificios ni gente ni animales. Cielo rosa pálido enorme. Sensación de lienzo en blanco.'],
+ ['a138.png','Año 138 · La Cosecha de Mundos','Trae especies de otros planetas.',
+  'Una diosa gigante colocando con los dedos árboles, animales y personas diminutas sobre un paisaje, como quien coloca piezas en una maqueta. Un portal cósmico brillante al fondo.'],
+ ['a367.png','Año 367 · El Incidente de las Caídas','El parque flotante se derrumba.',
+  'Un parque de atracciones flotante hecho de nubes cayendo del cielo hecho pedazos sobre una multitud diminuta. Toboganes en espiral partidos, puentes colgantes rotos, escombros y polvo. Cielo naranja de catástrofe.'],
+ ['a372.png','Año 372 · Entrada incompleta','La página que nadie escribió.',
+  'Una lámina de papel completamente en blanco, rasgada por la mitad, flotando sobre un fondo oscuro y vacío. No hay nada más en la imagen. Sensación de dato perdido.'],
+ ['a501.png','Año 501 · La Vigilia Divina','Nace Vigilis, el ojo del cielo.',
+  'Un ojo gigantesco abierto en el cielo, rodeado de llamas doradas, lanzando un rayo de fuego sobre una ciudad de piedra abajo. Gente diminuta huyendo.'],
+ ['a612.png','Año 612 · Surgimiento de Arbo','El bosque vuelve a crecer.',
+  'Un bosque exuberante brotando sobre tierra quemada y agrietada, con un espíritu hecho de corteza y hojas caminando entre los árboles nuevos. Mitad muerta, mitad viva.'],
+ ['a708.png','Año 708 · El Lamento de las Aguas','Muere Aric, nace Lydara.',
+  'Un castillo dorado solitario al borde del mar bajo un cielo azul crepuscular, con un andamio de madera roto colgando de la torre más alta. Una perla brillando en el agua, abajo.'],
+ ['a738.png','Año 738 · Orden de los Constructores','Arténica en obras.',
+  'Una ciudad de piedra dorada en plena construcción, con grúas de madera, andamios y obreros diminutos trabajando. Un gran puente sobre un río la cruza.'],
+ ['a978.png','Año 978 · Guerra de las Tierras Fértiles','Los gólems detienen la guerra.',
+  'Campo de batalla arrasado, con ruinas humeantes y campos quemados, y dos gólems de piedra gigantes de pie entre los escombros, inmóviles, con los ojos brillando.'],
+ ['a1103.png','Año 1103 · Academia Arcana','Estelaria bajo la aurora.',
+  'Ciudad de torres altísimas y estrechas con un observatorio de cúpula en lo alto, bajo una aurora boreal azul y un cielo lleno de estrellas y constelaciones visibles.'],
+ ['a1176.png','Año 1176 · El Cataclismo Oscuro','Nace el Abismo.',
+  'Una explosión mágica rosa y blanca abriendo un pozo sin fondo en la tierra, con criaturas deformes cayendo dentro. Cielo negro, tierra agrietada, luz saliendo del agujero.']
+ ]
+},
+{
+ n:'04', t:'EXTRAS', prio:false, opt:true,
+ d:'Detalles finales. <b>No bloquean nada</b>, se pueden dejar para el final.',
+ dest:'public/assets/ui/', dim:'varios', ratio:1, tp:'VARIOS', bg:false,
+ items:[
+ ['cursor.png','Cursor del ratón','32 × 32, transparente.',
+  'Imagen cuadrada 32x32, pixel art muy simple y legible a tamaño diminuto, fondo transparente, sin texto. Un cincel de cantero pequeño con la punta hacia arriba a la izquierda, mango de madera y punta metálica.'],
+ ['favicon.png','Favicon','64 × 64, la pestaña del navegador.',
+  'Imagen cuadrada 64x64, pixel art muy simple, fondo transparente, sin texto. El planeta Lutum simplificado al máximo: un círculo con bandas diagonales rosa fucsia, crema dorada y violeta oscuro.'],
+ ['nebulosa-fria.png','Nebulosa fría','1254 × 1254, fondo alternativo.',
+  'Imagen cuadrada 1254x1254, pixel art de 16 bits, sin texto. Fondo espacial de nebulosa en violetas y azules fríos con muchas estrellas pequeñas de distintos tamaños y algunas estrellas grandes de cuatro puntas.'],
+ ['nebulosa-calida.png','Nebulosa cálida','1254 × 1254, fondo alternativo.',
+  'Imagen cuadrada 1254x1254, pixel art de 16 bits, sin texto. Fondo espacial de nebulosa en dorados, ámbares y rosas cálidos con muchas estrellas pequeñas y algunas grandes de cuatro puntas.']
+ ]
+}
+];
+
+/* ============ RENDER ============ */
+const cont=document.getElementById('tandas');
+let TOTAL=0, idx=0;
+const guardado=JSON.parse(localStorage.getItem('lutum_assets')||'{}');
+
+TANDAS.forEach(T=>{
+  TOTAL+=T.items.length;
+  const sec=document.createElement('section');
+  sec.className='tanda';
+  sec.innerHTML=`
+    <div class="thead">
+      <span class="n">${T.n}</span>
+      <h2>${T.t}</h2>
+      <span class="cnt${T.opt?' opt':''}">${T.items.length} ${T.items.length===1?'IMAGEN':'IMÁGENES'}</span>
+      ${T.prio?'<span class="cnt" style="background:var(--c06);color:var(--c11)">PRIORIDAD</span>':''}
+    </div>
+    <p class="tdesc">${T.d}</p>
+    <div class="tbtns">
+      <button class="btn" data-all="${T.n}">COPIAR LOS ${T.items.length} PROMPTS</button>
+      <button class="btn" data-dest="${T.dest}">COPIAR RUTA DESTINO</button>
+    </div>
+    <div class="grid"></div>`;
+  const grid=sec.querySelector('.grid');
+
+  T.items.forEach(([file,name,desc,prompt])=>{
+    idx++;
+    const full=(T.n==='03'?BASE_ESC:BASE_TR)+prompt;
+    const key=T.dest+file;
+    const c=document.createElement('article');
+    c.className='card box'+(guardado[key]?' done':'');
+    c.dataset.key=key;
+    const alto=Math.round(230*T.ratio*(T.ratio<1?1.35:1));
+    c.innerHTML=`
+      <div class="slot${T.bg?' bg':''}" style="height:${T.ratio<1?188:230}px">
+        <span class="num">${String(idx).padStart(2,'0')}</span>
+        <div class="ph">
+          <div class="ico">${T.bg?'🖼':'✧'}</div>
+          <div class="dim">${T.dim}</div>
+          <div class="tp">${T.tp}</div>
+        </div>
+      </div>
+      <div class="cbody">
+        <div class="fname">${file}</div>
+        <div class="fpath">→ <b>${T.dest}</b></div>
+        <div class="fdesc"><b>${name}</b> · ${desc}</div>
+        <div class="prompt">${full}</div>
+        <div class="cactions">
+          <button class="btn cp">COPIAR PROMPT</button>
+          <button class="btn tg${guardado[key]?' ok':''}">${guardado[key]?'✓ LISTO':'MARCAR LISTO'}</button>
+        </div>
+      </div>`;
+    c.querySelector('.cp').onclick=()=>copiar(full,'PROMPT COPIADO');
+    c.querySelector('.tg').onclick=e=>{
+      const on=!c.classList.contains('done');
+      c.classList.toggle('done',on);
+      e.target.classList.toggle('ok',on);
+      e.target.textContent=on?'✓ LISTO':'MARCAR LISTO';
+      if(on) guardado[key]=1; else delete guardado[key];
+      localStorage.setItem('lutum_assets',JSON.stringify(guardado));
+      progreso();
+    };
+    grid.appendChild(c);
+  });
+
+  sec.querySelector('[data-all]').onclick=()=>{
+    const txt=T.items.map(([f,n,d,p],i)=>
+      `--- ${i+1}. ${f} (${n}) ---\n`+(T.n==='03'?BASE_ESC:BASE_TR)+p).join('\n\n');
+    copiar(txt,'LOS '+T.items.length+' PROMPTS COPIADOS');
+  };
+  sec.querySelector('[data-dest]').onclick=()=>copiar(T.dest,'RUTA COPIADA');
+  cont.appendChild(sec);
+});
+
+/* ============ PROGRESO ============ */
+const pbar=document.getElementById('pbar');
+for(let i=0;i<TOTAL;i++) pbar.appendChild(document.createElement('i'));
+function progreso(){
+  const hechos=document.querySelectorAll('.card.done').length;
+  document.getElementById('pcount').textContent=hechos+' / '+TOTAL;
+  [...pbar.children].forEach((el,i)=>el.classList.toggle('f',i<hechos));
+}
+progreso();
+
+/* ============ COPIAR ============ */
+const toast=document.getElementById('toast');
+let tt;
+function copiar(txt,msg){
+  const ok=()=>{ toast.textContent=msg||'COPIADO'; toast.classList.add('on');
+    clearTimeout(tt); tt=setTimeout(()=>toast.classList.remove('on'),1600); };
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(ok,()=>fallback(txt,ok));
+  } else fallback(txt,ok);
+}
+function fallback(txt,ok){
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); ok(); }catch(e){ alert('No se ha podido copiar. Selecciónalo a mano.'); }
+  ta.remove();
+}
+</script>
+</body>
+</html>

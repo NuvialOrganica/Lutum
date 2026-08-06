@@ -1,0 +1,22 @@
+# dependencias y compilados
+node_modules/
+web/dist/
+web/.astro/
+
+# Los PNG originales de la IA pesan ~40 MB y no hacen falta para construir la
+# web: lo que se publica es la versión ya convertida en web/public/assets/.
+# Se guardan aparte. Para regenerarlos: herramientas/pixelizar.py
+Assets/
+
+# los 8 prototipos de la fase de propuestas, ya superados
+propuestas/
+herramientas/revision-*.png
+herramientas/_*.png
+
+# sueltos
+.DS_Store
+Thumbs.db
+*.zip
+
+# notas locales sueltas
+link git.txt
