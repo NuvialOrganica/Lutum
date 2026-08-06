@@ -230,6 +230,41 @@ MANO = [
 TINTA, CREMA = (38, 16, 31, 255), (247, 227, 176, 255)
 
 
+CREMA_CURSOR = (247, 227, 176, 255)
+
+
+def contornear(im: Image.Image, color, grosor: int) -> Image.Image:
+    """Rodea la silueta con un contorno de color.
+
+    Es lo que hace legible un cursor sobre cualquier fondo. Sin contorno, un
+    objeto oscuro sobre una web oscura simplemente no se ve, aunque el
+    navegador lo esté pintando.
+    """
+    from PIL import ImageFilter
+
+    m = grosor + 1
+    lienzo = Image.new("RGBA", (im.width + m * 2, im.height + m * 2), (0, 0, 0, 0))
+    lienzo.paste(im, (m, m))
+
+    alfa = lienzo.split()[3].point(lambda v: 255 if v >= 128 else 0)
+    gordo = alfa.filter(ImageFilter.MaxFilter(1 + 2 * grosor))
+    borde = ImageChops.subtract(gordo, alfa)
+
+    capa = Image.new("RGBA", lienzo.size, color)
+    capa.putalpha(borde)
+    return Image.alpha_composite(capa, lienzo)
+
+
+def punto_sensible(im: Image.Image) -> tuple[int, int]:
+    """Dónde apunta el cursor: el píxel opaco más arriba y a la izquierda."""
+    px = im.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            if px[x, y][3] > 128:
+                return x, y
+    return 0, 0
+
+
 def generar_cursores(dir_out: Path) -> list[str]:
     """Deja en ui/ los dos cursores listos para usar en CSS."""
     hechos = []
@@ -242,11 +277,18 @@ def generar_cursores(dir_out: Path) -> list[str]:
         im = Image.open(origen).convert("RGBA")
         im = im.transpose(Image.FLIP_LEFT_RIGHT)
         im = recortar_a_contenido(im)
-        lienzo = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
-        lienzo.paste(im, (1, 1))                     # la punta, casi en el origen
-        lienzo = lienzo.resize((64, 64), Image.NEAREST)
+
+        # Se amplía hasta casi llenar el lienzo. Sin esto el dibujo ocupaba
+        # 20x28 de 64x64 y en pantalla era una mota.
+        factor = max(1, 40 // max(im.width, im.height))
+        im = im.resize((im.width * factor, im.height * factor), Image.NEAREST)
+        im = contornear(im, CREMA_CURSOR, factor)
+
+        lienzo = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+        lienzo.paste(im, (0, 0))
         lienzo.save(ui / "cursor.png")
-        hechos.append("cursor.png  64x64  punta en 2,2")
+        punta = punto_sensible(lienzo)
+        hechos.append(f"cursor.png  48x48  punta en {punta[0]},{punta[1]}")
 
     # --- puntero de cosas clicables
     mano = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
