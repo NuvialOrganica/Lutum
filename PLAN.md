@@ -73,23 +73,23 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 ## 4 · FASE 3 — Panteón `/panteon` *(la pantalla principal)*
 
-- [ ] Órbita: el planeta en el centro y las 13 deidades girando
-- [ ] Arrastrar para girar la rueda + inercia
-- [ ] **Hover en cualquier dios → apodo + año de nacimiento** (como ya hace Cladis) ← pedido explícito
-- [ ] Sprites pixel de cada deidad en la órbita (símbolo, 16×16 escalado ×3)
-- [ ] Click → panel derecha que se abre con animación de pasos
-- [ ] Panel: **ILUSTRACIÓN** del dios arriba (imagen grande) ← pedido explícito
-- [ ] Panel: nombre + título + insignia de alineamiento
-- [ ] Panel: **CRÓNICA** (texto)
-- [ ] Panel: **ATRIBUTOS** (4 barras: poder, caos, culto, huella)
-- [ ] Panel: **ORIGEN** (sentimiento + objeto + parte, con icono cada uno)
-- [ ] Panel: **VÍNCULOS** (botones a otros dioses)
-- [ ] Filtro por alineamiento
-- [ ] **Caso especial Lunaris**: dentro de su ficha, la *Cámara del Veredicto* ← pedido explícito
-- [ ] Objeto flotante **telescopio** → lleva a `/codice` ← pedido explícito
-- [ ] Objeto flotante **clepsidra** → lleva a `/cronica` ← pedido explícito
-- [ ] Objeto flotante **mapa** → lleva a `/lugares` (si D1 = sí)
-- [ ] Ficha a pantalla completa `/deidad/[slug]` para enlace directo
+- [x] Órbita: Cladis (el planeta) en el centro y las otras 12 girando a su alrededor
+- [x] Arrastrar para girar la rueda + inercia. Gira a 12 fps y redondeando a píxel entero: a 60 fps suaves los sigilos caían en medios píxeles y salían borrosos
+- [x] **Hover en cualquier dios → nombre, apodo y año** ← pedido explícito de Cristina
+- [x] 13 sigilos 16×16 dibujados a mano, a ×3 en la rueda. Se generan como SVG en compilación (cero JS, cero peticiones)
+- [x] Click → cajón derecho con animación de pasos. Las 13 fichas van pre-renderizadas en el HTML: se leen sin JavaScript
+- [x] Panel: **ILUSTRACIÓN** arriba, con marcador de RETRATO PENDIENTE mientras no llegue el PNG
+- [x] Panel: nombre + título + insignias de alineamiento y año
+- [x] Panel: **CRÓNICA**
+- [x] Panel: **ATRIBUTOS**, 4 barras de 10 bloques
+- [x] Panel: **ORIGEN** con un icono pixel propio para cada casilla (16 iconos dibujados a mano, reutilizados con distinta paleta)
+- [x] Panel: **VÍNCULOS**, saltan de una ficha a otra sin recargar
+- [x] Filtro por alineamiento
+- [x] **Caso especial Lunaris**: la *Cámara del Veredicto* dentro de su ficha, con las fases girando a saltos ← pedido explícito
+- [x] Objeto flotante **telescopio** → `/codice` ← pedido explícito
+- [x] Objeto flotante **cubo negro** → `/cronica` (provisional, como se acordó)
+- [x] Objeto flotante **pergamino** → `/lugares`
+- [x] Ficha a pantalla completa en `/deidad/[slug]` (13 páginas) y enlace directo con `/panteon/#slug`
 
 ## 5 · FASE 4 — Códice `/codice`
 
@@ -126,7 +126,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 > Flujo: yo monto una **página HTML de referencia** con el hueco al tamaño exacto y el prompt al lado → Cristina lo genera con ChatGPT → lo dejamos en `public/assets/`.
 
 - [x] Montar `ASSETS.html` con los 31 assets, sus prompts y marcador de progreso
-- [ ] **Tanda 1 · 13 ilustraciones de deidad** (bloquea la Fase 3)
+- [ ] **Tanda 1 · 13 ilustraciones de deidad** — ya NO bloquea: el panteón funciona con marcador y las imágenes se enchufan soltándolas en `Assets/` y corriendo el script
 - [x] **Tanda 2 · objetos-portal**: martillo, telescopio y pergamino ✓ recibidos y procesados
 - [x] **Tanda 3 · 11 cuadros de suceso histórico** ✓ recibidos y procesados
 - [x] **Tanda 4 · extras**: cursor, favicon y 2 nebulosas ✓ recibidos y procesados

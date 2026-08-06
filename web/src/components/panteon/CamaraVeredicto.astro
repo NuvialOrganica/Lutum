@@ -1,0 +1,108 @@
+---
+/**
+ * La Cámara del Veredicto: sólo aparece dentro de la ficha de Lunaris.
+ *
+ * No es un adorno. En el vault, Lunaris no guía almas: las evalúa y dicta una
+ * de dos salidas. Poder someter un alma y ver qué sale es la única forma de
+ * que eso se entienda de verdad.
+ */
+---
+
+<section class="camara marco marco--doble">
+  <span class="etiqueta">CÁMARA DEL VEREDICTO</span>
+
+  <div class="luna" id="luna-veredicto" aria-hidden="true">
+    <span class="fase" data-f="0"></span>
+    <span class="fase" data-f="1"></span>
+    <span class="fase" data-f="2"></span>
+    <span class="fase" data-f="3"></span>
+  </div>
+
+  <p class="dicta" id="dicta">
+    Lunaris no pregunta. Observa todas las versiones posibles de una vida y
+    dicta función, no castigo.
+  </p>
+
+  <button class="someter px" id="someter" type="button">SOMETER UN ALMA</button>
+</section>
+
+<style>
+  .camara{ margin-top:var(--u12); padding:var(--u8) var(--u6) var(--u6); text-align:center }
+
+  /* Las cuatro fases, superpuestas y compitiendo, como en el vault. */
+  .luna{
+    position:relative; width:64px; height:64px; margin:0 auto var(--u6);
+    background:var(--c01); box-shadow:0 0 0 var(--u) var(--c00), inset 0 0 0 2px var(--c03);
+  }
+  .fase{
+    position:absolute; inset:8px; background:var(--c10);
+    transition:clip-path .2s steps(4), opacity .2s steps(2);
+    opacity:0;
+  }
+  .fase[data-f="0"]{ clip-path:inset(0 100% 0 0) }        /* nueva: nada */
+  .fase[data-f="1"]{ clip-path:inset(0 0 0 50%) }          /* creciente */
+  .fase[data-f="2"]{ clip-path:inset(0 0 0 0) }            /* llena */
+  .fase[data-f="3"]{ clip-path:inset(0 50% 0 0) }          /* menguante */
+  .luna[data-activa="0"] .fase[data-f="0"],
+  .luna[data-activa="1"] .fase[data-f="1"],
+  .luna[data-activa="2"] .fase[data-f="2"],
+  .luna[data-activa="3"] .fase[data-f="3"]{ opacity:1 }
+  /* en luna nueva sólo queda el hueco */
+  .luna[data-activa="0"]::after{
+    content:""; position:absolute; inset:8px;
+    box-shadow:inset 0 0 0 2px var(--c05);
+  }
+
+  .dicta{
+    font-size:21px; color:var(--c09); line-height:1.3; min-height:4.2em;
+    max-width:44ch; margin:0 auto var(--u6);
+  }
+  .dicta :global(b){
+    display:block; font-family:'PxTitulo',monospace; font-size:16px;
+    color:var(--c13); letter-spacing:.1em; margin-bottom:var(--u3);
+  }
+  .dicta :global(i){ color:var(--c11); font-style:normal }
+
+  .someter{
+    font-size:8px; letter-spacing:.2em; color:var(--c13);
+    padding:var(--u3) var(--u5, 20px);
+    box-shadow:0 0 0 2px var(--c05), var(--u) var(--u) 0 rgba(0,0,0,.5);
+    transition:none;
+  }
+  .someter:hover{ color:var(--c00); background:var(--c13); box-shadow:0 0 0 2px var(--c10) }
+  .someter:active{ transform:translate(var(--u),var(--u)); box-shadow:0 0 0 2px var(--c10) }
+  .someter[disabled]{ color:var(--c04); cursor:progress }
+</style>
+
+<script>
+  const VEREDICTOS: [string, string][] = [
+    ['REENCARNACIÓN', 'El alma vuelve al ciclo <i>corregida</i>. Conservará una intuición sin origen: la certeza de haber estado aquí antes.'],
+    ['REENCARNACIÓN', 'Devuelta al ciclo <i>deformada</i>. Repetirá las mismas tres decisiones equivocadas en un orden distinto.'],
+    ['REENCARNACIÓN', 'Aprobada por dos fases contra dos. La llena impuso su criterio sobre la menguante.'],
+    ['RECICLAJE', 'Se descompone en energía cruda para sostener el equilibrio del mundo. No hay castigo: hay función.'],
+    ['RECICLAJE', 'Identidad insuficiente para un ciclo nuevo. La hoz de luz negra no corta cuerpos: corta <i>nombres</i>.'],
+  ];
+
+  const boton = document.getElementById('someter') as HTMLButtonElement | null;
+  const luna = document.getElementById('luna-veredicto');
+  const dicta = document.getElementById('dicta');
+  if (boton && luna && dicta) {
+    luna.dataset.activa = '2';
+
+    boton.addEventListener('click', () => {
+      boton.disabled = true;
+      dicta.innerHTML = '<b>…</b>La cabeza gira lentamente.';
+      let n = 0;
+      // el giro es a saltos: las fases no se funden, compiten
+      const giro = setInterval(() => {
+        luna.dataset.activa = String(++n % 4);
+        if (n < 9) return;
+        clearInterval(giro);
+        const [titulo, texto] = VEREDICTOS[Math.floor(Math.random() * VEREDICTOS.length)]!;
+        luna.dataset.activa = titulo === 'RECICLAJE' ? '3' : '1';
+        dicta.innerHTML = `<b>${titulo}</b>${texto}`;
+        boton.disabled = false;
+      }, 190);
+    });
+  }
+</script>

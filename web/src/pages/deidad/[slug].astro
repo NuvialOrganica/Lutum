@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import FichaDeidad from '../../components/panteon/FichaDeidad.astro';
+import Estrellas from '../../components/Estrellas.astro';
+import { DEIDADES, SECCIONES } from '../../data/deidades';
+
+export function getStaticPaths() {
+  return DEIDADES.map((d) => ({ params: { slug: d.slug }, props: { d } }));
+}
+const { d } = Astro.props;
+---
+<Base titulo={d.nombre} descripcion={`${d.nombre}, ${d.titulo}. ${d.anioTexto}.`}>
+  <div class="pagina">
+    <Estrellas densidad={12} clase="cielo" />
+    <div class="columna">
+      <p class="px seccion">{SECCIONES[d.seccion]}</p>
+      <FichaDeidad d={d} suelta />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .pagina{ position:relative; min-height:100svh; padding:var(--u16) var(--u6) var(--u16) }
+  .pagina :global(.cielo){ position:fixed; opacity:.5 }
+  .columna{ position:relative; z-index:2; max-width:640px; margin:0 auto }
+  .seccion{
+    font-size:8px; letter-spacing:.3em; color:var(--c08); opacity:.9;
+    margin-bottom:var(--u6); text-align:center;
+  }
+</style>

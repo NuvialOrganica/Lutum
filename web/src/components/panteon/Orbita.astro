@@ -1,0 +1,373 @@
+---
+import SpritePx from '../SpritePx.astro';
+import FichaDeidad from './FichaDeidad.astro';
+import Estrellas from '../Estrellas.astro';
+import { DEIDADES, ALINEAMIENTOS, porSlug } from '../../data/deidades';
+import { url, pagina } from '../../lib/rutas';
+
+// Cladis va en el centro: es el planeta y es la madre de todo lo demás.
+const cladis = porSlug('cladis')!;
+const orbitan = DEIDADES.filter((d) => d.slug !== 'cladis');
+
+const PORTALES = [
+  { icono: 'assets/objetos/telescopio.png', destino: 'codice',  nombre: 'El Códice',   pos: 'ar' },
+  { icono: null,                            destino: 'cronica', nombre: 'La Crónica',  pos: 'ab' },
+  { icono: 'assets/objetos/pergamino.png',  destino: 'lugares', nombre: 'Los Lugares', pos: 'ai' },
+];
+---
+
+<div class="panteon" id="panteon">
+  <Estrellas densidad={14} clase="fondo-estrellas" />
+
+  {/* ================= LA RUEDA ================= */}
+  <div class="escena" id="escena">
+    <div class="rueda" id="rueda">
+      <svg class="anillos" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="29" />
+        <circle cx="50" cy="50" r="44" class="punteado" />
+      </svg>
+
+      <button class="nucleo" type="button" data-slug="cladis"
+              aria-label={`${cladis.nombre}, ${cladis.titulo}`}>
+        <img src={url('assets/planeta.png')} width="256" height="256" alt="" />
+      </button>
+
+      {orbitan.map((d) => (
+        <button
+          class="astro" type="button"
+          data-slug={d.slug} data-ang={d.angulo} data-anillo={d.anillo}
+          data-alineamiento={d.alineamiento}
+          aria-label={`${d.nombre}, ${d.titulo}, ${d.anioTexto}`}
+        >
+          <span class="sigilo"><SpritePx nombre={d.slug} paleta={d.paleta} tam={48} /></span>
+          {/* Esto es lo que pidió Cristina: al acercar el ratón, apodo y año. */}
+          <span class="rotulo">
+            <b class="px">{d.nombre}</b>
+            <i>{d.titulo}</i>
+            <em class="px">{d.anioTexto}</em>
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <p class="pie-nucleo">
+      <b class="px">CLADIS</b>
+      <i>La Caprichosa · Año 0</i>
+    </p>
+  </div>
+
+  {/* ================= FILTROS ================= */}
+  <div class="filtros" id="filtros">
+    <p class="px lbl">ALINEAMIENTO</p>
+    <button class="chip px activo" type="button" data-alin="">TODOS</button>
+    {ALINEAMIENTOS.map((a) => (
+      <button class="chip px" type="button" data-alin={a}>{a}</button>
+    ))}
+  </div>
+
+  {/* ================= PORTALES ================= */}
+  <nav class="portales" aria-label="Otras secciones">
+    {PORTALES.map((p) => (
+      <a class={`portal portal--${p.pos}`} href={pagina(p.destino)} title={p.nombre}>
+        {p.icono
+          ? <img src={url(p.icono)} width="128" height="128" alt="" />
+          : <span class="cubo" aria-hidden="true"></span>}
+        <span class="px nombre">{p.nombre}</span>
+      </a>
+    ))}
+  </nav>
+
+  <p class="ayuda px" id="ayuda">ARRASTRA LA RUEDA · PULSA UN DIOS</p>
+
+  {/* ================= CAJÓN ================= */}
+  <aside class="cajon" id="cajon" aria-hidden="true" aria-label="Ficha de la deidad">
+    <button class="cerrar px" id="cerrar" type="button" aria-label="Cerrar la ficha">✕</button>
+    <div class="cajon-cuerpo" id="cajon-cuerpo">
+      {DEIDADES.map((d) => (
+        <div class="hoja" data-slug={d.slug} hidden><FichaDeidad d={d} /></div>
+      ))}
+    </div>
+  </aside>
+</div>
+
+<style>
+  .panteon{ position:relative; height:100svh; overflow:hidden }
+  .panteon :global(.fondo-estrellas){ z-index:0 }
+
+  /* ---------- escena ---------- */
+  .escena{
+    position:absolute; inset:0; z-index:2;
+    display:grid; place-items:center; align-content:center;
+    transition:transform .24s steps(4), filter .24s steps(4);
+  }
+  .panteon[data-abierto] .escena{ filter:brightness(.42) saturate(.5) }
+  @media (min-width:1100px){
+    .panteon[data-abierto] .escena{ transform:translateX(-13%) scale(.9) }
+  }
+
+  .rueda{
+    position:relative;
+    width:min(78vmin, 620px); height:min(78vmin, 620px);
+  }
+  .anillos{ position:absolute; inset:0; width:100%; height:100% }
+  .anillos circle{ fill:none; stroke:var(--c03); stroke-width:.3 }
+  .anillos .punteado{ stroke:var(--c02); stroke-dasharray:1 2 }
+
+  /* ---------- núcleo: Cladis ---------- */
+  .nucleo{
+    position:absolute; left:50%; top:50%;
+    width:128px; height:128px; margin:-64px 0 0 -64px;
+    padding:0; z-index:4;
+    filter:drop-shadow(0 0 var(--u6) rgba(232,93,151,.5));
+    animation:latido 6s steps(12) infinite;
+    transition:none;
+  }
+  .nucleo img{ width:100%; height:100% }
+  .nucleo:hover{ filter:drop-shadow(0 0 var(--u8) rgba(247,227,176,.75)) }
+  @media (min-width:900px){
+    .nucleo{ width:192px; height:192px; margin:-96px 0 0 -96px }
+  }
+  .pie-nucleo{
+    position:absolute; left:50%; bottom:calc(50% - 152px);
+    transform:translateX(-50%); text-align:center; z-index:5; pointer-events:none;
+  }
+  @media (min-width:900px){ .pie-nucleo{ bottom:calc(50% - 196px) } }
+  .pie-nucleo b{ display:block; font-size:16px; color:var(--c10); letter-spacing:.24em }
+  .pie-nucleo i{
+    display:block; font-style:normal; font-size:19px;
+    color:var(--c09); margin-top:var(--u2);
+  }
+
+  /* ---------- astros ---------- */
+  .astro{
+    position:absolute; left:0; top:0;
+    width:64px; height:64px; margin:-32px 0 0 -32px;
+    display:grid; place-items:center; z-index:3;
+    transition:opacity .16s steps(2);
+  }
+  .sigilo{
+    display:grid; place-items:center;
+    width:64px; height:64px; background:var(--c01);
+    box-shadow:0 0 0 var(--u) var(--c00), inset 0 0 0 2px var(--c03);
+  }
+  .astro:hover .sigilo,
+  .astro:focus-visible .sigilo{ background:var(--c02); box-shadow:0 0 0 var(--u) var(--c00), inset 0 0 0 2px var(--c08) }
+  .astro[data-activo] .sigilo{ background:var(--c05); box-shadow:0 0 0 var(--u) var(--c00), inset 0 0 0 2px var(--c10) }
+  .astro[data-oculto]{ opacity:.14; pointer-events:none }
+
+  /* El rótulo con apodo y año: sólo al acercarse. */
+  .rotulo{
+    position:absolute; top:calc(100% + var(--u2)); left:50%;
+    transform:translateX(-50%);
+    width:max-content; max-width:200px; text-align:center;
+    background:var(--c00); padding:var(--u2) var(--u3);
+    box-shadow:0 0 0 2px var(--c05);
+    opacity:0; pointer-events:none;
+    transition:opacity .12s steps(2);
+    z-index:6;
+  }
+  .astro:hover .rotulo,
+  .astro:focus-visible .rotulo,
+  .astro[data-activo] .rotulo{ opacity:1 }
+  .rotulo b{ display:block; font-size:8px; color:var(--c10); letter-spacing:.14em }
+  .rotulo i{
+    display:block; font-style:normal; font-size:17px; line-height:1.16;
+    color:var(--c09); margin-top:var(--u);
+  }
+  .rotulo em{
+    display:block; font-style:normal; font-size:8px;
+    color:var(--c13); letter-spacing:.12em; margin-top:var(--u2);
+  }
+
+  /* ---------- filtros ---------- */
+  .filtros{
+    position:absolute; left:var(--u6); bottom:var(--u6); z-index:6;
+    display:flex; flex-direction:column; align-items:flex-start; gap:var(--u2);
+    max-width:210px;
+  }
+  .lbl{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.65); margin-bottom:var(--u2) }
+  .chip{
+    font-size:8px; letter-spacing:.1em; color:var(--c04); text-transform:uppercase;
+    padding:var(--u2) var(--u3); text-align:left;
+    box-shadow:0 0 0 2px var(--c02);
+    transition:none;
+  }
+  .chip:hover{ color:var(--c10); box-shadow:0 0 0 2px var(--c05) }
+  .chip.activo{ color:var(--c00); background:var(--c08); box-shadow:0 0 0 2px var(--c10) }
+
+  /* ---------- portales flotantes ---------- */
+  .portales{ position:absolute; inset:0; z-index:5; pointer-events:none }
+  .portal{
+    position:absolute; pointer-events:auto; text-align:center;
+    animation:flotar 6.4s steps(16) infinite;
+  }
+  .portal img{ width:96px; height:96px; margin:0 auto }
+  .portal .cubo{
+    display:block; width:72px; height:72px; margin:12px auto;
+    background:var(--c00); box-shadow:inset 0 0 0 4px var(--c02), 0 0 0 var(--u) var(--c05);
+  }
+  .portal .nombre{
+    display:block; font-size:8px; letter-spacing:.12em; color:rgba(245,168,192,.6);
+    margin-top:var(--u2); transition:none;
+  }
+  .portal:hover .nombre{ color:var(--c13) }
+  .portal:hover img,.portal:hover .cubo{ filter:drop-shadow(0 0 var(--u4) rgba(240,178,90,.6)) }
+  .portal--ar{ right:var(--u8); top:var(--u16); animation-delay:-1s }
+  .portal--ab{ right:var(--u8); bottom:var(--u12); animation-delay:-3s }
+  .portal--ai{ left:var(--u8); top:var(--u16); animation-delay:-5s }
+  .panteon[data-abierto] .portales{ opacity:.15 }
+  .portales{ transition:opacity .24s steps(3) }
+
+  .ayuda{
+    position:absolute; left:50%; bottom:var(--u4); transform:translateX(-50%);
+    z-index:6; font-size:8px; letter-spacing:.22em; color:rgba(245,168,192,.65);
+    transition:opacity .3s steps(3);
+  }
+  .panteon[data-abierto] .ayuda{ opacity:0 }
+
+  /* ---------- cajón ---------- */
+  .cajon{
+    position:absolute; top:0; right:0; bottom:0; z-index:20;
+    width:min(560px, 100%);
+    background:var(--c00);
+    box-shadow:-4px 0 0 var(--c05), -8px 0 0 var(--c00);
+    transform:translateX(101%);
+    transition:transform .28s steps(7);
+    display:flex; flex-direction:column;
+  }
+  .panteon[data-abierto] .cajon{ transform:none }
+  .cerrar{
+    position:absolute; top:var(--u4); right:var(--u4); z-index:2;
+    font-size:16px; color:var(--c09); line-height:1;
+    padding:var(--u2) var(--u3); box-shadow:0 0 0 2px var(--c03);
+  }
+  .cerrar:hover{ color:var(--c00); background:var(--c06); box-shadow:0 0 0 2px var(--c10) }
+  .cajon-cuerpo{
+    overflow-y:auto; padding:var(--u12) var(--u8) var(--u16);
+    flex:1; overscroll-behavior:contain;
+  }
+  @media (max-width:640px){
+    .cajon-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
+    .filtros{ display:none }
+    .portal img{ width:64px; height:64px }
+    .portal .cubo{ width:48px; height:48px }
+  }
+</style>
+
+<script>
+  const panteon = document.getElementById('panteon')!;
+  const rueda = document.getElementById('rueda')!;
+  const cajon = document.getElementById('cajon')!;
+  const astros = Array.from(rueda.querySelectorAll<HTMLElement>('.astro'));
+  const hojas = Array.from(cajon.querySelectorAll<HTMLElement>('.hoja'));
+  const cuerpo = document.getElementById('cajon-cuerpo')!;
+
+  const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- la rueda gira ------------------------------------------------
+     A 12 fps y redondeando a píxel entero. Si se dejara girar suave a 60 fps,
+     los sigilos caerían en medios píxeles y se verían borrosos justo en la
+     pantalla que más se mira.                                              */
+  const VEL_BASE = 0.35;           // grados por fotograma
+  let giro = 0, vel = VEL_BASE, objetivo = VEL_BASE;
+  let arrastrando = false, ultimoX = 0, movido = false;
+
+  function colocar() {
+    const caja = rueda.getBoundingClientRect();
+    const cx = Math.round(caja.width / 2);
+    const cy = Math.round(caja.height / 2);
+    const radios = { 1: Math.round(caja.width * 0.29), 2: Math.round(caja.width * 0.44) };
+    for (const a of astros) {
+      const ang = (Number(a.dataset.ang) + giro) * Math.PI / 180;
+      const r = radios[a.dataset.anillo === '1' ? 1 : 2];
+      a.style.transform =
+        `translate(${Math.round(cx + Math.cos(ang) * r)}px,${Math.round(cy + Math.sin(ang) * r)}px)`;
+    }
+  }
+
+  function bucle() {
+    if (!arrastrando) {
+      giro += vel;
+      vel += (objetivo - vel) * 0.08;
+      if (giro > 360) giro -= 360;
+    }
+    colocar();
+    setTimeout(() => requestAnimationFrame(bucle), 1000 / 12);
+  }
+
+  colocar();
+  if (!quieto) bucle();
+  addEventListener('resize', colocar);
+
+  /* ---------- arrastrar para girar ---------- */
+  rueda.addEventListener('pointerdown', (e) => {
+    arrastrando = true; movido = false; ultimoX = e.clientX;
+    rueda.setPointerCapture(e.pointerId);
+  });
+  rueda.addEventListener('pointermove', (e) => {
+    if (!arrastrando) return;
+    const dx = e.clientX - ultimoX;
+    if (Math.abs(dx) > 2) movido = true;
+    giro += dx * 0.3;
+    vel = dx * 0.22;
+    ultimoX = e.clientX;
+    colocar();
+  });
+  addEventListener('pointerup', () => { arrastrando = false; });
+
+  /* ---------- abrir y cerrar la ficha ---------- */
+  function abrir(slug: string) {
+    const hoja = hojas.find((h) => h.dataset.slug === slug);
+    if (!hoja) return;
+    hojas.forEach((h) => { h.hidden = h !== hoja; });
+    astros.forEach((a) => {
+      if (a.dataset.slug === slug) a.dataset.activo = '';
+      else delete a.dataset.activo;
+    });
+    panteon.dataset.abierto = '';
+    cajon.setAttribute('aria-hidden', 'false');
+    cuerpo.scrollTop = 0;
+    objetivo = 0.1;                          // la rueda casi se para al leer
+    history.replaceState(null, '', `#${slug}`);
+  }
+
+  function cerrar() {
+    delete panteon.dataset.abierto;
+    cajon.setAttribute('aria-hidden', 'true');
+    astros.forEach((a) => delete a.dataset.activo);
+    objetivo = VEL_BASE;
+    history.replaceState(null, '', location.pathname);
+  }
+
+  rueda.addEventListener('click', (e) => {
+    if (movido) return;                      // era un arrastre, no un clic
+    const boton = (e.target as HTMLElement).closest<HTMLElement>('[data-slug]');
+    if (boton?.dataset.slug) abrir(boton.dataset.slug);
+  });
+  document.getElementById('cerrar')?.addEventListener('click', cerrar);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrar(); });
+
+  // saltar de un dios a otro desde los vínculos
+  cajon.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ir]');
+    if (b?.dataset.ir) abrir(b.dataset.ir);
+  });
+
+  // enlace directo: /panteon/#lydara abre esa ficha
+  const inicial = location.hash.slice(1);
+  if (inicial) abrir(inicial);
+
+  /* ---------- filtro por alineamiento ---------- */
+  const chips = Array.from(document.querySelectorAll<HTMLElement>('.chip'));
+  for (const chip of chips) {
+    chip.addEventListener('click', () => {
+      chips.forEach((c) => c.classList.toggle('activo', c === chip));
+      const filtro = chip.dataset.alin ?? '';
+      for (const a of astros) {
+        const coincide = !filtro || a.dataset.alineamiento === filtro;
+        if (coincide) delete a.dataset.oculto;
+        else a.dataset.oculto = '';
+      }
+    });
+  }
+</script>

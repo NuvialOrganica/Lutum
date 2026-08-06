@@ -1,0 +1,221 @@
+---
+import SpritePx from '../SpritePx.astro';
+import CamaraVeredicto from './CamaraVeredicto.astro';
+import { ETIQUETAS_STATS, type Deidad } from '../../data/deidades';
+import { url, pagina } from '../../lib/rutas';
+import { DEIDADES } from '../../data/deidades';
+
+interface Props {
+  d: Deidad;
+  /** true en /deidad/[slug]: sin botón de cerrar y con enlace de vuelta. */
+  suelta?: boolean;
+}
+const { d, suelta = false } = Astro.props;
+
+const ETIQUETAS_ORIGEN = ['SENTIMIENTO', 'OBJETO', 'PARTE DE CLADIS'] as const;
+const valoresOrigen = [d.origen.sentimiento, d.origen.objeto, d.origen.parte];
+const vinculos = d.vinculos
+  .map((v) => DEIDADES.find((x) => x.slug === v))
+  .filter((x): x is Deidad => Boolean(x));
+---
+
+<article class="ficha" data-slug={d.slug} data-alineamiento={d.alineamiento}>
+
+  {/* ---- ilustración ---- */}
+  <div class="lienzo marco">
+    <span class="etiqueta">ILUSTRACIÓN</span>
+    <img
+      class="retrato"
+      src={url(`assets/deidades/${d.slug}.png`)}
+      width="192" height="192" alt={`${d.nombre}, ${d.titulo}`}
+      loading="lazy" decoding="async"
+      onerror="this.closest('.lienzo').dataset.falta='si'; this.remove();"
+    />
+    <div class="pendiente" aria-hidden="true">
+      <SpritePx nombre={d.slug} paleta={d.paleta} tam={96} />
+      <p class="px">RETRATO PENDIENTE</p>
+    </div>
+  </div>
+
+  {/* ---- identidad ---- */}
+  <header class="identidad">
+    <h2 class="px nombre">{d.nombre}</h2>
+    <p class="titulo">{d.titulo}</p>
+    <p class="insignias">
+      <span class="px chapa">{d.alineamiento}</span>
+      <span class="px chapa chapa--tenue">{d.anioTexto}</span>
+    </p>
+  </header>
+
+  {/* ---- crónica ---- */}
+  <section class="bloque marco">
+    <span class="etiqueta">CRÓNICA</span>
+    {d.cronica.map((p) => <p set:html={p} />)}
+  </section>
+
+  {/* ---- atributos ---- */}
+  <section class="bloque marco atributos">
+    <span class="etiqueta">ATRIBUTOS</span>
+    {d.stats.map((v, i) => (
+      <div class="stat">
+        <div class="stat-cab">
+          <span class="px">{ETIQUETAS_STATS[i]}</span>
+          <b class="px">{String(v).padStart(2, '0')}/10</b>
+        </div>
+        <div class="barra" role="img" aria-label={`${ETIQUETAS_STATS[i]}: ${v} de 10`}>
+          {Array.from({ length: 10 }, (_, j) => (
+            <i class:list={[{ lleno: j < v, tope: j < v && v >= 9 }]} />
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+
+  {/* ---- origen: la receta divina ---- */}
+  <section class="bloque marco origen">
+    <span class="etiqueta">ORIGEN</span>
+    <div class="receta">
+      {d.origen.iconos.map(([icono, paleta], i) => (
+        <>
+          {i > 0 && <span class="mas px">+</span>}
+          <div class="pieza">
+            <div class="hueco"><SpritePx nombre={icono} paleta={paleta} tam={48} /></div>
+            <span class="px clave">{ETIQUETAS_ORIGEN[i]}</span>
+            <span class="valor">{valoresOrigen[i]}</span>
+          </div>
+        </>
+      ))}
+    </div>
+  </section>
+
+  {/* ---- datos sueltos ---- */}
+  <section class="bloque marco datos">
+    <span class="etiqueta">FICHA</span>
+    <dl>
+      <div><dt class="px">DOMINIOS</dt><dd>{d.dominios}</dd></div>
+      <div><dt class="px">ARMA</dt><dd>{d.arma}</dd></div>
+      <div><dt class="px">SÍMBOLO</dt><dd>{d.simbolo}</dd></div>
+      {d.templo && <div><dt class="px">TEMPLO</dt><dd>{d.templo}</dd></div>}
+    </dl>
+  </section>
+
+  {/* ---- la cámara sólo la tiene Lunaris ---- */}
+  {d.slug === 'lunaris' && <CamaraVeredicto />}
+
+  {/* ---- vínculos ---- */}
+  {vinculos.length > 0 && (
+    <section class="vinculos">
+      <p class="px lbl">VÍNCULOS</p>
+      <div class="lista">
+        {vinculos.map((v) => (
+          <button class="vinculo px" type="button" data-ir={v.slug}>
+            <SpritePx nombre={v.slug} paleta={v.paleta} tam={32} />
+            <span>{v.nombre}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <p class="susurro">“{d.susurro}”<small class="px">LA RELATORA</small></p>
+
+  {suelta
+    ? <a class="px salir" href={pagina('panteon')}>◂ VOLVER A LA RUEDA</a>
+    : <a class="px salir" href={pagina(`deidad/${d.slug}`)}>VER FICHA COMPLETA ▸</a>}
+</article>
+
+<style>
+  .ficha{ display:block }
+
+  /* ---- ilustración ---- */
+  .lienzo{
+    position:relative; display:grid; place-items:center;
+    min-height:232px; padding:var(--u6); margin-bottom:var(--u8);
+    background:
+      repeating-linear-gradient(45deg, var(--c02) 0 8px, var(--c01) 8px 16px);
+    background-size:22.7px 22.7px;   /* franjas de 16 px reales en diagonal */
+  }
+  .retrato{ width:192px; height:192px }
+  @media (min-width:1100px){ .retrato{ width:192px; height:192px } }
+  .pendiente{ display:none; text-align:center }
+  .lienzo[data-falta="si"] .pendiente{ display:grid; justify-items:center; gap:var(--u4) }
+  .pendiente p{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.75) }
+
+  /* ---- identidad ---- */
+  .identidad{ text-align:center; margin-bottom:var(--u8) }
+  .nombre{
+    font-size:24px; color:var(--c10);
+    text-shadow:var(--u) var(--u) 0 var(--c05);
+  }
+  .titulo{ font-size:21px; color:var(--c09); margin-top:var(--u3); line-height:1.24 }
+  .insignias{ margin-top:var(--u4); display:flex; gap:var(--u2); justify-content:center; flex-wrap:wrap }
+  .chapa{
+    font-size:8px; letter-spacing:.14em; color:var(--c00); background:var(--c13);
+    padding:var(--u) var(--u3); box-shadow:2px 2px 0 rgba(0,0,0,.5);
+  }
+  .chapa--tenue{ background:var(--c05); color:var(--c10) }
+
+  /* ---- bloques ---- */
+  .bloque{ padding:var(--u6) var(--u5, 20px) var(--u5, 20px); margin-bottom:var(--u8) }
+  .bloque p{ font-size:21px; line-height:1.32; color:var(--c09) }
+  .bloque p + p{ margin-top:var(--u3) }
+  .bloque :global(b){ color:var(--c10) }
+  .bloque :global(i){ color:var(--c13); font-style:normal }
+
+  /* ---- atributos ---- */
+  .stat + .stat{ margin-top:var(--u4) }
+  .stat-cab{ display:flex; justify-content:space-between; margin-bottom:var(--u2) }
+  .stat-cab span{ font-size:8px; letter-spacing:.14em; color:var(--c09) }
+  .stat-cab b{ font-size:8px; color:var(--c10) }
+  .barra{ display:flex; gap:2px }
+  .barra i{ flex:1; height:12px; background:var(--c03); box-shadow:inset 0 0 0 2px var(--c00) }
+  .barra i.lleno{ background:var(--c08) }
+  .barra i.tope{ background:var(--c13) }
+
+  /* ---- origen ---- */
+  .receta{ display:flex; align-items:flex-start; justify-content:center; gap:var(--u2) }
+  .pieza{ flex:1; text-align:center; min-width:0 }
+  .hueco{
+    width:64px; height:64px; margin:0 auto var(--u3);
+    display:grid; place-items:center; background:var(--c02);
+    box-shadow:inset 0 0 0 2px var(--c05), var(--u) var(--u) 0 rgba(0,0,0,.4);
+  }
+  .clave{ display:block; font-size:8px; color:rgba(245,168,192,.65); letter-spacing:.1em; margin-bottom:var(--u) }
+  .valor{ display:block; font-size:19px; color:var(--c10); line-height:1.16 }
+  .mas{ font-size:16px; color:var(--c13); padding-top:24px }
+
+  /* ---- datos ---- */
+  .datos dl > div{ display:grid; grid-template-columns:96px 1fr; gap:var(--u3); padding:var(--u2) 0 }
+  .datos dl > div + div{ border-top:2px solid var(--c02) }
+  .datos dt{ font-size:8px; color:rgba(245,168,192,.65); letter-spacing:.1em; padding-top:4px }
+  .datos dd{ font-size:19px; color:var(--c09) }
+
+  /* ---- vínculos ---- */
+  .vinculos{ margin-top:var(--u8) }
+  .lbl{ font-size:8px; letter-spacing:.2em; color:rgba(245,168,192,.65); margin-bottom:var(--u3) }
+  .lista{ display:flex; flex-wrap:wrap; gap:var(--u2) }
+  .vinculo{
+    display:flex; align-items:center; gap:var(--u2);
+    font-size:8px; letter-spacing:.1em; color:var(--c09);
+    padding:var(--u2) var(--u3);
+    box-shadow:0 0 0 2px var(--c03);
+    transition:none;
+  }
+  .vinculo:hover{ color:var(--c00); background:var(--c08); box-shadow:0 0 0 2px var(--c10) }
+
+  /* ---- pie ---- */
+  .susurro{
+    margin-top:var(--u8); padding-left:var(--u4);
+    border-left:var(--u) solid var(--c08);
+    font-size:21px; color:var(--c11); line-height:1.3;
+  }
+  .susurro small{
+    display:block; font-size:8px; letter-spacing:.24em;
+    color:rgba(245,168,192,.65); margin-top:var(--u3);
+  }
+  .salir{
+    display:inline-block; margin-top:var(--u8);
+    font-size:8px; letter-spacing:.16em; color:var(--c13);
+  }
+  .salir:hover{ color:var(--c11) }
+</style>

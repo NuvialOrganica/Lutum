@@ -1,0 +1,41 @@
+---
+import { buscarSprite, spriteASvg, PALETAS, type NombrePaleta } from '../data/sprites';
+
+interface Props {
+  /** Nombre del sprite en SIGILOS o ICONOS. */
+  nombre: string;
+  paleta: NombrePaleta;
+  /** Tamaño en px. Debe ser múltiplo de 16 o los píxeles salen desiguales. */
+  tam?: number;
+  clase?: string;
+  /** Si se pasa, el sprite cuenta como imagen con texto alternativo. */
+  alt?: string;
+}
+const { nombre, paleta, tam = 48, clase = '', alt } = Astro.props;
+
+const filas = buscarSprite(nombre);
+const contenido = filas ? spriteASvg(filas, PALETAS[paleta]) : '';
+
+if (import.meta.env.DEV && !filas) {
+  console.warn(`[SpritePx] no existe el sprite «${nombre}»`);
+}
+if (import.meta.env.DEV && tam % 16 !== 0) {
+  console.warn(`[SpritePx] tam=${tam} no es múltiplo de 16: los píxeles saldrán desiguales`);
+}
+---
+
+<svg
+  class:list={['sprite-px', clase]}
+  viewBox="0 0 16 16"
+  width={tam}
+  height={tam}
+  shape-rendering="crispEdges"
+  role={alt ? 'img' : 'presentation'}
+  aria-label={alt}
+  aria-hidden={alt ? undefined : 'true'}
+  set:html={contenido}
+/>
+
+<style>
+  .sprite-px{ display:block; image-rendering:pixelated }
+</style>
