@@ -11,7 +11,7 @@
 
 - [x] **D1 — `/lugares` SÍ entra.** El overworld explorable cubre los 11 lugares del vault y de ahí sale la pantalla de título.
 - [x] **D2 — La portada arranca con "PULSA ENTER" pero SÍ se puede bajar con scroll.** Debajo del título van el perfil del mundo y la receta divina, tal y como pidió Cristina. Da igual el SEO. Las demás pantallas (`/panteon`, `/codice`, `/cronica`, `/lugares`) sí son pantalla completa sin scroll de página; ahí el scroll sólo existe *dentro* de los paneles, con barra pixel.
-- [x] **D3 — El objeto de la crónica es, de momento, un cubo negro plano.** Provisional a propósito. Lo dibujo yo, no hay que generarlo.
+- [x] **D3 — El objeto de la crónica es un reloj de arena agrietado con arena rosa.** El cubo negro plano cumplió su función: en cuanto Cristina lo vio, decidió. Ya está generado y montado.
 - [x] **D4 — Kintsugi fuera.** No entra.
 - [x] **D5 — Repo y URL ya fijados.** El repositorio es **`github.com/NuvialOrganica/Lutum`**. Por tanto:
   ```js
@@ -31,7 +31,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 | 🔨 Martillo de forja sobre yunque | `/panteon` | pedir a Cristina |
 | 🔭 Telescopio de latón | `/codice` | pedir a Cristina |
 | 🗺️ Pergamino enrollado | `/lugares` | pedir a Cristina |
-| ⬛ Cubo negro plano | `/cronica` | **provisional a propósito**, lo dibujo yo |
+| ⏳ Reloj de arena agrietado | `/cronica` | ✓ generado y montado |
 
 ---
 
@@ -127,7 +127,7 @@ La navegación es diegética: no hay menú, hay objetos flotando. Aparecen al fi
 
 - [x] Montar `ASSETS.html` con los 31 assets, sus prompts y marcador de progreso
 - [ ] **Tanda 1 · 13 ilustraciones de deidad** — ya NO bloquea: el panteón funciona con marcador y las imágenes se enchufan soltándolas en `Assets/` y corriendo el script
-- [x] **Tanda 2 · objetos-portal**: martillo, telescopio y pergamino ✓ recibidos y procesados
+- [x] **Tanda 2 · objetos-portal**: martillo, telescopio, pergamino y reloj ✓ los cuatro recibidos y procesados
 - [x] **Tanda 3 · 11 cuadros de suceso histórico** ✓ recibidos y procesados
 - [x] **Tanda 4 · extras**: cursor, favicon y 2 nebulosas ✓ recibidos y procesados
 - [ ] Iconos de origen (sentimiento/objeto/parte) — **los dibujo yo**, no hacen falta de ChatGPT
