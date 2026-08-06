@@ -269,9 +269,58 @@ const PORTALES = [
   }
   @media (max-width:640px){
     .cajon-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
-    .filtros{ display:none }
     .portal img{ width:64px; height:64px }
     .portal .cubo{ width:48px; height:48px }
+  }
+
+  /* ---------- móvil ------------------------------------------------------
+     Va después del bloque de 640 a propósito: con el mismo peso, lo último
+     manda, y así estas reglas pisan las de arriba en un teléfono.        */
+  @media (max-width:720px){
+    /* Lo que pidió Cristina —saber quién es cada dios— iba por :hover, y con
+       el dedo no hay hover: en un teléfono la rueda era doce dibujos sin
+       nombre. Aquí el nombre se ve siempre. El apodo y el año siguen en la
+       ficha, que es donde caben: doce rótulos de tres líneas taparían la
+       rueda entera. */
+    .rotulo{
+      opacity:1; background:none; box-shadow:none;
+      padding:0; max-width:88px; top:calc(100% - var(--u));
+    }
+    .rotulo i, .rotulo em{ display:none }
+    .rotulo b{
+      font-size:7px; letter-spacing:.04em; line-height:1.2;
+      color:rgba(245,168,192,.75);
+      text-shadow:2px 2px 0 var(--c00), -2px -2px 0 var(--c00),
+                  2px -2px 0 var(--c00), -2px 2px 0 var(--c00);
+    }
+    /* El que está abierto sí se destaca. */
+    .astro[data-activo] .rotulo b{ color:var(--c13) }
+
+    /* Los filtros tampoco se esconden: en columna se comían la pantalla, así
+       que pasan a una tira que se desliza de lado encima de la barra. */
+    .filtros{
+      display:flex; flex-direction:row; align-items:center;
+      left:0; right:0; bottom:0; max-width:none;
+      gap:var(--u2); padding:var(--u2) var(--u4);
+      overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none;
+      background:rgba(10,4,16,.92); box-shadow:0 -2px 0 var(--c02);
+    }
+    .filtros::-webkit-scrollbar{ display:none }
+    /* Iman suave: un chip cortado por la mitad no se lee ni se pulsa bien. */
+    .filtros{ scroll-snap-type:x proximity }
+    .chip{ scroll-snap-align:center }
+    .lbl{ display:none }
+    .chip{ flex:none; white-space:nowrap; min-height:44px }
+
+    /* La ayuda vivía abajo, justo donde ahora va la tira de filtros. Sube al
+       borde de arriba, que en el móvil queda libre: el botón de volver está
+       escondido porque abajo hay barra. */
+    .ayuda{
+      bottom:auto; top:var(--u4);
+      font-size:7px; letter-spacing:.12em;
+      background:rgba(10,4,16,.8); padding:var(--u2) var(--u3);
+      white-space:nowrap;
+    }
   }
 </style>
 

@@ -23,6 +23,11 @@ const { d } = Astro.props;
 
 <style>
   .pagina{ position:relative; min-height:100svh; padding:var(--u16) var(--u6) var(--u16) }
+  @media (max-width:720px){
+    .pagina :global(.salir), .pagina :global(.someter){
+      display:inline-flex; align-items:center; min-height:44px;
+    }
+  }
   .pagina :global(.cielo){ position:fixed; opacity:.5 }
   .columna{ position:relative; z-index:2; max-width:640px; margin:0 auto }
   .seccion{

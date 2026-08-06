@@ -43,6 +43,7 @@ import { url } from '../../lib/rutas';
   </nav>
 
   <p class="ayuda px" id="ayuda">RUEDA O FLECHAS PARA AVANZAR</p>
+  <p class="ayuda-movil px">DESLIZA PARA AVANZAR</p>
 
   {/* Sin JavaScript la cronología se lee igual, en vertical. */}
   <noscript>
@@ -148,9 +149,45 @@ import { url } from '../../lib/rutas';
   .sinjs img{ width:384px; max-width:100%; margin-bottom:var(--u4) }
   .sinjs p{ font-size:20px; color:var(--c09); margin-bottom:var(--u3) }
 
+  .ayuda-movil{ display:none }
+
   @media (max-width:900px){
     .panel{ left:var(--u4); right:var(--u4); bottom:80px; width:auto;
       max-height:40vh; overflow-y:auto }
+  }
+
+  @media (max-width:720px){
+    /* Once años repartidos en 390 px caen a 35 px unos de otros: los números
+       se pisan y no se lee ninguno. Se enseña uno de cada dos, y el año de la
+       era en la que estás siempre. El punto sigue estando para todos, que es
+       lo que se pulsa. */
+    .marca:nth-child(even) b{ display:none }
+    .marca[data-activa] b{
+      display:block; color:var(--c13);
+      background:var(--c00); padding:2px 3px;
+    }
+    .marca b{ font-size:6px }
+    /* Zona pulsable de sobra alrededor de un punto de 8 px. */
+    /* Solo se agranda a lo alto: once marcas caen a 35 px unas de otras y
+       llevarlas a 44 de ancho las solaparia entre si, que es peor que una
+       zona algo justa. Para avanzar tambien esta el deslizamiento. */
+    .marca{ padding:var(--u3) var(--u2); top:-26px; min-height:44px }
+    .linea{ padding:var(--u6) var(--u4) 0 }
+
+    /* Con el dedo no hay rueda ni flechas. */
+    .ayuda{ display:none }
+    .ayuda-movil{
+      display:block; position:absolute; left:50%; top:var(--u4);
+      transform:translateX(-50%); z-index:8;
+      font-size:7px; letter-spacing:.16em; color:rgba(245,168,192,.5);
+      background:rgba(10,4,16,.8); padding:var(--u2) var(--u3);
+      white-space:nowrap; pointer-events:none;
+      transition:opacity .3s steps(3);
+    }
+    .cronica[data-avanzado] .ayuda-movil{ opacity:0 }
+
+    /* El panel se sube: abajo están la línea de tiempo y la barra. */
+    .panel{ bottom:96px; max-height:38svh }
   }
 </style>
 
@@ -358,7 +395,17 @@ import { url } from '../../lib/rutas';
     ultimo = e.clientX;
     x = destino; pintar();
   });
-  addEventListener('pointerup', () => { arrastrando = false; cv.classList.remove('arrastrando'); });
+  addEventListener('pointerup', (e) => {
+    if (!arrastrando) return;
+    arrastrando = false; cv.classList.remove('arrastrando');
+    // Iman a la era mas cercana, solo con el dedo. Con la rueda del raton se
+    // deja libre: ahi se afina el sitio y forzar un salto molesta. Arrastrando
+    // con el pulgar, en cambio, es imposible parar justo en un ano, y quedarse
+    // a medias entre dos escenas no significa nada.
+    if (e.pointerType !== 'touch') { empujar(); return; }
+    irA(Math.round(destino / ANCHO_ESCENA) * ANCHO_ESCENA);
+    empujar();
+  });
 
   for (const m of marcas) {
     m.addEventListener('click', () => { irA(Number(m.dataset.i) * ANCHO_ESCENA); empujar(); });

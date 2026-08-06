@@ -42,6 +42,13 @@ import { url } from '../../lib/rutas';
   {/* ---------- índice ---------- */}
   <details class="indice">
     <summary class="px">ÍNDICE · {LUGARES.length} LUGARES</summary>
+    {/* La leyenda no cabe en la barra del móvil, pero tampoco se puede quitar:
+        sin ella nadie sabe qué significa una chincheta apagada. Se cuenta con
+        palabras aquí dentro, que es donde hay sitio. */}
+    <p class="leyenda-hoja">
+      Las chinchetas <b>encendidas</b> tienen ficha. Las <b>apagadas</b> salen
+      en el mapa pero todavía no se han escrito.
+    </p>
     <ul>
       {LUGARES.map((l) => (
         <li>
@@ -54,6 +61,7 @@ import { url } from '../../lib/rutas';
   </details>
 
   <p class="ayuda px" id="ayuda">ARRASTRA EL MAPA · PULSA UNA CHINCHETA</p>
+  <p class="ayuda-movil px">ARRASTRA · PELLIZCA PARA ACERCAR · PULSA UNA CHINCHETA</p>
 
   {/* ---------- panel ---------- */}
   <div class="hoja-velo" id="velo" aria-hidden="true"></div>
@@ -184,8 +192,27 @@ import { url } from '../../lib/rutas';
   .panel-cuerpo{ overflow-y:auto; padding:var(--u12) var(--u6) var(--u16);
     flex:1; overscroll-behavior:contain }
 
+  .leyenda-hoja, .ayuda-movil{ display:none }
+
   @media (max-width:720px){
-    .indice{ display:none }
+    /* El índice NO se esconde: antes estaba en display:none y en el móvil
+       simplemente no había forma de recorrer los 27 lugares. Pasa a ser una
+       tira encima de la barra del mapa que se despliega hacia arriba. Sigue
+       siendo un <details>, así que funciona sin JavaScript. */
+    .indice{
+      position:absolute; left:0; right:0; top:auto; bottom:46px;
+      max-width:none; z-index:14;
+      background:var(--c00); box-shadow:0 -2px 0 var(--c05);
+    }
+    .indice summary{ text-align:center; padding:var(--u3) }
+    .indice[open]{ max-height:58svh; overflow-y:auto }
+    .indice li button{ padding:var(--u3) 0; font-size:20px; min-height:44px }
+    .leyenda-hoja{
+      display:block; padding:var(--u2) var(--u4) var(--u3);
+      font-size:16px; line-height:1.3; color:rgba(245,168,192,.6);
+    }
+    .leyenda-hoja b{ color:var(--c10) }
+    /* En la barra de abajo no cabe, y repetirla sobraría. */
     .leyenda{ display:none }
     .panel-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
     /* En una pantalla de móvil el mapa entero cabe pequeño, y 27 marcas a
@@ -193,10 +220,25 @@ import { url } from '../../lib/rutas';
        dedo puede acertar: el área tocable la da el propio botón. */
     .pincho{ width:10px; height:10px; box-shadow:0 0 0 3px var(--c00), 0 0 0 4px var(--c10) }
     .chincheta.vacia .pincho{ box-shadow:0 0 0 3px var(--c00), 0 0 0 4px var(--c09) }
-    .chincheta{ padding:var(--u2) }
+    /* Zona pulsable de 44 px: el dibujo se queda como esta, lo que crece
+       es la caja invisible. Medido, casi todo lo pulsable andaba por 26.
+       Con el pulgar eso es fallar una de cada tres. */
+    .chincheta{ padding:var(--u2); min-width:44px; min-height:44px }
+    .ayuda{ display:none }
+    .ayuda-movil{
+      display:block; position:absolute; left:50%; top:var(--u4);
+      transform:translateX(-50%); z-index:10;
+      font-size:7px; letter-spacing:.1em; color:rgba(245,168,192,.55);
+      background:rgba(10,4,16,.8); padding:var(--u2) var(--u3);
+      white-space:nowrap; pointer-events:none;
+      transition:opacity .3s steps(3);
+    }
+    .mundo[data-tocado] .ayuda-movil{ opacity:0 }
+
     /* En el móvil desaparece el interruptor del RATÓN (no hay ratón que
        apagar) y sólo queda el del CRT, así que basta con un hueco menor. */
     .barra{ padding:var(--u3) 76px var(--u3) var(--u4); justify-content:space-between }
+    .lupas button{ min-width:44px; min-height:44px }
     .lupas{ margin-left:0 }
   }
 </style>

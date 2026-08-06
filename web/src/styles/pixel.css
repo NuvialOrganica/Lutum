@@ -201,3 +201,23 @@ html[data-crt="off"] .crt-vineta{ display:none }
 @media (min-width:721px){
   .hoja-asa, .hoja-velo{ display:none }
 }
+
+/* -------------------------------------------------------------------------
+   ZONAS PULSABLES DEL MÓVIL
+
+   Repaso final midiendo los 193 elementos pulsables de las seis pantallas: la
+   mitad andaba por 26 px de alto. Con el pulgar eso es fallar a menudo. Aquí
+   van los que son comunes a varias pantallas; los propios de cada una están
+   en su componente.
+
+   La excepción consciente son las marcas de año de la crónica: once repartidas
+   en 390 px caen a 35 px unas de otras, y ensancharlas hasta 44 las solaparía
+   entre sí. Se agrandan sólo a lo alto, y para avanzar también se desliza.
+   ------------------------------------------------------------------------- */
+@media (max-width:720px){
+  /* El asa es lo que se agarra para bajar la hoja: tiene que ser cómoda. */
+  .hoja-asa{ min-height:44px; display:flex; align-items:center; justify-content:center }
+  .hoja-inferior .cerrar{ min-width:44px; min-height:44px }
+  /* Las tiras desplegables (índices) y sus resúmenes. */
+  .indice summary{ min-height:44px; display:flex; align-items:center; justify-content:center }
+}

@@ -41,6 +41,8 @@ const datosCliente = {
   </details>
 
   <p class="ayuda px" id="ayuda">ARRASTRA EL CIELO · RUEDA PARA ACERCAR · PULSA UNA ESTRELLA</p>
+  {/* Con el dedo no hay rueda que valga: la ayuda de escritorio mentiría. */}
+  <p class="ayuda-movil px">ARRASTRA · PELLIZCA PARA ACERCAR · PULSA UNA ESTRELLA</p>
 
   {/* ---------- panel ---------- */}
   <div class="hoja-velo" id="velo" aria-hidden="true"></div>
@@ -91,7 +93,9 @@ const datosCliente = {
   /* En pantalla estrecha el buscador centrado se metía debajo del botón de
      volver y el placeholder salía cortado. Baja a su propia línea. */
   @media (max-width:720px){
-    .buscador{ top:var(--u16); width:calc(100vw - var(--u8)) }
+    /* Sube al borde: en el móvil el botón de volver está escondido (abajo hay
+       barra), así que la esquina de arriba ya no la ocupa nadie. */
+    .buscador{ top:var(--u4); width:calc(100vw - var(--u8)) }
   }
   .buscador input{
     width:100%; background:var(--c01); color:var(--c10);
@@ -161,8 +165,57 @@ const datosCliente = {
   .panel-cuerpo{ overflow-y:auto; padding:var(--u12) var(--u6) var(--u16);
     flex:1; overscroll-behavior:contain }
 
+  .ayuda-movil{ display:none }
+
   @media (max-width:720px){
-    .filtros, .indice{ display:none }
+    /* Ni el índice ni los filtros se esconden. Estaban en display:none, o sea
+       que en el móvil no había forma de filtrar constelaciones ni de recorrer
+       las 43 entradas: la funcionalidad no se adaptó, se borró. */
+
+    /* Los filtros pasan a una tira que se desliza de lado, encima del índice.
+       Cinco chips no caben en 390 px puestos en columna sin comerse la
+       pantalla. */
+    .filtros{
+      left:0; right:0; bottom:44px; z-index:14;
+      flex-direction:row; align-items:center; gap:var(--u2);
+      overflow-x:auto; overscroll-behavior-x:contain;
+      padding:var(--u2) var(--u4);
+      background:var(--c00); box-shadow:0 -2px 0 var(--c02);
+      scrollbar-width:none;
+    }
+    .filtros::-webkit-scrollbar{ display:none }
+    .filtros{ scroll-snap-type:x proximity }
+    .fch{ scroll-snap-align:center }
+    .lbl{ display:none }
+    .fch{ flex:none; padding:var(--u2) var(--u3); min-height:44px }
+
+    /* El índice, tira desplegable pegada abajo. Sigue siendo un <details>,
+       así que funciona sin JavaScript. */
+    .indice{
+      left:0; right:0; top:auto; bottom:0;
+      max-width:none; z-index:15;
+      background:var(--c00); box-shadow:0 -2px 0 var(--c05);
+    }
+    .indice summary{ text-align:center; padding:var(--u3) }
+    .indice[open]{ max-height:54svh; overflow-y:auto }
+    .indice li{ padding:var(--u2) 0 }
+    /* Zona pulsable de 44 px: el dibujo se queda como esta, lo que crece
+       es la caja invisible. Medido, casi todo lo pulsable andaba por 26.
+       Con el pulgar eso es fallar una de cada tres. */
+    .indice li button{ font-size:20px; min-height:44px; width:100% }
+
+    /* La de escritorio habla de la rueda del ratón; se cambia por la del
+       dedo, y sube arriba porque abajo ya no queda hueco. */
+    .ayuda{ display:none }
+    .ayuda-movil{
+      display:block; position:absolute; left:50%; top:64px;
+      transform:translateX(-50%); z-index:11;
+      font-size:7px; letter-spacing:.12em; color:rgba(245,168,192,.45);
+      pointer-events:none; white-space:nowrap;
+      transition:opacity .2s steps(2);
+    }
+    .codice[data-abierto] .ayuda-movil{ opacity:0 }
+
     .panel-cuerpo{ padding:var(--u12) var(--u4) var(--u16) }
   }
 </style>

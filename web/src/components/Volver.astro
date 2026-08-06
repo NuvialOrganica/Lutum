@@ -36,5 +36,8 @@ const { a = '', texto, enMovil = false } = Astro.props;
 
   @media (max-width:720px){
     .volver:not(.en-movil){ display:none }
+    /* El que se queda (la ficha de deidad) es el único camino de vuelta desde
+       ahí, así que se pulsa cómodo. */
+    .volver.en-movil{ min-height:44px }
   }
 </style>

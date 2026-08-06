@@ -18,8 +18,12 @@ import { url } from '../lib/rutas';
     <h1 class="titulo">LUTUM</h1>
     <p class="lema px">EL MUNDO DE BARRO</p>
 
+    {/* Dos textos y no uno cambiado por JavaScript: así el correcto ya está
+        en el HTML y no hay un parpadeo de «PULSA ENTER» en el móvil antes de
+        que arranque nada. Lo elige una consulta de medios por el puntero. */}
     <button class="empezar px parpadea" id="empezar" type="button">
-      PULSA ENTER
+      <span class="con-teclado">PULSA ENTER</span>
+      <span class="con-dedo">TOCA PARA ENTRAR</span>
     </button>
   </div>
 
@@ -48,6 +52,15 @@ import { url } from '../lib/rutas';
     animation:flotar 7.2s steps(18) infinite;
     filter:drop-shadow(0 0 var(--u8) rgba(232,93,151,.45));
   }
+  /* Un teclado del que fiarse hace falta para decir «pulsa ENTER»: se mira el
+     puntero, no el ancho. Una tableta con teclado es ancha y táctil a la vez. */
+  .con-dedo{ display:none }
+  @media (max-width:720px){ .empezar{ min-height:44px } }
+  @media (hover:none), (pointer:coarse){
+    .con-teclado{ display:none }
+    .con-dedo{ display:inline }
+  }
+
   /* ×2 sólo cuando de verdad cabe: si no, se come el «PULSA ENTER» */
   @media (min-width:1200px) and (min-height:1040px){
     .planeta{ width:512px; height:512px }

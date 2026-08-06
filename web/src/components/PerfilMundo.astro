@@ -48,6 +48,13 @@ import { EJES } from '../data/mundo';
     display:grid; grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));
     gap:var(--u8);
   }
+  /* En el movil `auto-fit` con minimo de 320 px cae a UNA columna, y los seis
+     ejes se convierten en una tira interminable de scroll. Dos columnas
+     estrechas se leen de un vistazo y ocupan la mitad. */
+  @media (max-width:720px){
+    .ejes{ grid-template-columns:1fr 1fr; gap:var(--u4) }
+    .eje{ padding:var(--u4) }
+  }
   .eje{ padding:var(--u6); position:relative; overflow:hidden }
   .eje .num{
     position:absolute; top:var(--u2); right:var(--u3);

@@ -71,6 +71,12 @@ import { hayAsset } from '../lib/assets';
     display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));
     gap:var(--u8);
   }
+  /* Mismo motivo: los cuatro objetos caian en columna y habia que bajar
+     media pantalla para ver el ultimo. En 2x2 se ven los cuatro a la vez, que
+     es de lo que va una estanteria. */
+  @media (max-width:720px){
+    .portales{ grid-template-columns:1fr 1fr; gap:var(--u4) }
+  }
   .portal{
     display:block; padding:var(--u6) var(--u4) var(--u4);
     text-align:center; color:inherit;

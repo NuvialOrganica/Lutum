@@ -38,11 +38,13 @@ import { RECETA } from '../data/mundo';
         <tbody>
           {RECETA.map((r) => (
             <tr>
-              <td class="deidad">{r.deidad}</td>
-              <td class="sent">{r.sentimiento}</td>
-              <td class="obj">{r.objeto}</td>
-              <td class="parte">{r.parte}</td>
-              <td class="anio px">{r.anio}</td>
+              {/* Las etiquetas se repiten aquí porque en el móvil la tabla se
+                  apila en fichas y la cabecera deja de estar a la vista. */}
+              <td class="deidad" data-etiqueta="Deidad">{r.deidad}</td>
+              <td class="sent" data-etiqueta="Sentimiento">{r.sentimiento}</td>
+              <td class="obj" data-etiqueta="Objeto">{r.objeto}</td>
+              <td class="parte" data-etiqueta="Parte">{r.parte}</td>
+              <td class="anio px" data-etiqueta="Año">{r.anio}</td>
             </tr>
           ))}
         </tbody>
@@ -98,4 +100,40 @@ import { RECETA } from '../data/mundo';
   .obj{ color:var(--c09) }
   .parte{ color:var(--c11) }
   .anio{ font-size:8px; color:rgba(245,168,192,.7); letter-spacing:.1em }
+
+  /* ---------- móvil: la tabla se apila -----------------------------------
+     Una tabla de 720 px dentro de un contenedor que se arrastra de lado es de
+     lo peor que se puede poner en un teléfono: se lee a trozos y nunca se ve
+     una fila entera. Cada accidente pasa a ser una ficha con sus etiquetas
+     delante. Sigue siendo un <table> de verdad, así que un lector de pantalla
+     lo recorre igual que antes.                                          */
+  @media (max-width:720px){
+    .scroll{ overflow-x:visible }
+    table{ min-width:0; display:block }
+    /* La cabecera sobra: cada celda ya lleva su etiqueta. Se esconde sin
+       sacarla del árbol, para no romper la tabla. */
+    thead{
+      position:absolute; width:1px; height:1px;
+      overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+    }
+    tbody{ display:block }
+    tr{
+      display:block; margin-bottom:var(--u4);
+      box-shadow:0 0 0 2px var(--c02); padding:var(--u2) 0;
+    }
+    tr:last-child{ margin-bottom:0 }
+    tr:hover td{ background:none }
+    td{
+      display:grid; grid-template-columns:80px 1fr; gap:var(--u3);
+      align-items:baseline;
+      padding:var(--u2) var(--u4); border-bottom:none; font-size:19px;
+    }
+    td::before{
+      content:attr(data-etiqueta);
+      font-family:'PxTitulo',monospace; font-size:7px; letter-spacing:.1em;
+      color:var(--c08); text-transform:uppercase;
+    }
+    .deidad{ font-size:21px }
+    .anio{ font-size:8px }
+  }
 </style>
